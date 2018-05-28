@@ -195,30 +195,11 @@ function loadLights(viewMatrix) {
     //document.getElementById("debug-text").innerHTML = dbgstr;
 }
 
-function lightLogic() {
-    var sunmat = sun.getWorldSpaceTransform();
-    var suntrans = vec3.create();
-    mat4.getTranslation(suntrans, sunmat);
-    document.getElementById("debug-text").innerHTML = suntrans;
-    if (suntrans [1] < 0) {
-        sunlight.enable = 0.0;
-        lightbulb.enable = 1.0;
-        headR.enable = 1.0; 
-        headL.enable = 1.0;
-    } else {
-        sunlight.enable = 1.0;
-        lightbulb.enable = 0.0;
-        headR.enable = 0.0; 
-        headL.enable = 0.0;
-    }
-}
-
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     var viewMatrix = rotator.getViewMatrix();
     loadLights(viewMatrix);
-    lightLogic();
 
     // defined in modeldata.js
     rdraw(root, viewMatrix);

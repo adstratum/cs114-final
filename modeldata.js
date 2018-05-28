@@ -324,18 +324,8 @@ var tree3 = new Tree("t4", new Transform({translate: [-4, -6, .5], rotateDeg: 90
 var car = new Car("car", new Transform({translate: [0, -5, .55], rotateDeg: 90, rotateAxis: [1, 0, 0]}), nullAnim, road);
 var lightpost = new Model("lightpost base", uvCylinder(), dMat, new Transform({translate: [0, 0, 1], scale: [0.5, 0.5, 2]}), nullAnim, ground);
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material([1, 1, 0, 1]), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
-var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 40});
+var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
-var sunParent = new Node("sunParent", new Transform(), new Transform({rotateDeg: .5, rotateAxis: [0, 0, 1]}), root);
-var sun = new Model("sun", uvSphere(), new Material([1, 1, 0, 1]), new Transform({translate: [-10, 0, 0]}), nullAnim, sunParent);
-var sunlight = new Light("sun emitter", new Transform(), nullAnim, sun, {type: "point", atten: 1000});
-
-var headR = new Light("right headlight emitter", new Transform(), nullAnim, car.headRight, {type: "spot", atten:10, spotAngle: -0.6});
-var headL = new Light("left headlight emitter", new Transform(), nullAnim, car.headLeft, {type: "spot", atten:10, spotAngle: -0.6});
-
-car.headRight.lightOverride = true;
-car.headLeft.lightOverride = true;
 lightmodel.lightOverride = true;
-sun.lightOverride = true;
 
-lights = [lightbulb, sunlight, headR, headL];
+lights = [lightbulb];
