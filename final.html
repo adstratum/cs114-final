@@ -1,0 +1,177 @@
+<meta charset="UTF-8">
+<html>
+    <head>
+        <title>
+            Programming Assignment 4
+        </title>
+        <style>
+            body{
+                background-color: #eeeeee;
+            }
+            label {
+                white-space: pre;
+            }
+        </style>
+        <!-- <script src="http://benvanik.github.com/WebGL-Inspector/core/embed.js"></script> -->
+        <script type="x-shader/x-vertex" id="vshader-source">
+            attribute vec3 a_coords;
+            attribute vec3 a_normal;
+            uniform mat4 modelview;
+            uniform mat4 projection;
+        
+            varying vec3 v_normal;
+            varying vec3 v_coords;
+            varying vec3 v_worldcoords;
+            void main() {
+                // just compute vertex positions in vertex shader; pass coordinates + normals
+                // to fragment shader to compute more accurate per-pixel values.
+                vec4 coords = vec4(a_coords,1.0);
+                vec4 eyeSpaceCoords = modelview * coords;
+                gl_Position = projection * eyeSpaceCoords;
+        
+                v_normal = a_normal;
+                v_coords = eyeSpaceCoords.xyz;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="fshader-source">
+            #ifdef GL_FRAGMENT_PRECISION_HIGH
+                precision highp float;
+            #else
+                precision mediump float;
+            #endif
+            #define LIGHT_SOURCES 4
+
+            varying vec3 v_coords;
+            varying vec3 v_normal;
+        
+            uniform vec3 specularColor;
+            uniform vec4 diffuseColor;
+            uniform float specularExponent;
+            uniform vec3 lightPosition;
+            uniform vec3 lightPositions[LIGHT_SOURCES];
+            uniform float attenuation[LIGHT_SOURCES];
+            uniform vec3 lightDir[LIGHT_SOURCES];
+            uniform float lightAngleLimit[LIGHT_SOURCES];
+            uniform float enable[LIGHT_SOURCES];
+            uniform float lightOverride;
+        
+            uniform mat4 modelview;
+            uniform mat3 normalMatrix;
+        
+            float Ka = 0.1;
+            float Kd = 0.8;
+            float Ks = 0.4;
+
+            struct SpotLight {
+                vec3 lightPos;
+                vec3 diffuseColor;
+                vec3 specularColor;
+                float specularExponent;
+                float attenuation;
+                vec3 spotDir;
+                float spotInner;
+                float spotOuter;
+            };
+
+            struct Light {
+                vec3 lightPos;
+                vec3 diffuseColor;
+                vec3 specularColor;
+                float specularExponent;
+                float attenuation;
+            };
+
+            vec4 calcSpotLight(const vec3 pos, const vec3 normal, const SpotLight l) {
+                vec3 N = normalize(normalMatrix * normal); // normal vector
+                vec3 L = l.lightPos - pos; // light direction
+                float dist = distance(l.lightPos, pos);
+                float range = l.spotInner - l.spotOuter;
+
+                float atten = clamp(1.0 - dist / l.attenuation, 0.0, 1.0);
+                atten *= atten;
+                vec4 l_fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+                float dotLightDirection = dot(normalize(L), normalize(l.spotDir));
+                float inSpot = clamp((dotLightDirection - l.spotOuter) / range, 0.0, 1.0);
+
+                float LdotN = clamp(dot(normalize(L), N), 0.0, 1.0);
+                float specular = 0.0;
+                if (LdotN > 0.0) {
+                    vec3 R = normalize(reflect(-L, N));  // reflection direction
+                    vec3 V = -normalize(pos); // viewer direction
+                    float specularAngle = clamp(dot(R, V), 0.0, 1.0);
+                    specular = pow(specularAngle, l.specularExponent);
+                }
+
+                vec3 Ia = Ka * diffuseColor.rgb * atten * inSpot;
+                vec3 Id = Kd * diffuseColor.rgb * LdotN * atten * inSpot;
+                vec3 Is = Ks * specularColor.rgb * pow(specular,specularExponent) * atten * inSpot;
+                l_fragColor = vec4(Ia + Id + Is, 1.0);
+                return l_fragColor;
+            }
+
+            vec4 calcPointLight(const vec3 pos, const vec3 normal, const Light l) {
+                vec3 N = normalize(normalMatrix * normal); // normal vector
+                vec3 L = l.lightPos - pos; // light direction
+                
+                float dist = distance(l.lightPos, pos);
+                float atten = clamp(1.0 - dist / l.attenuation, 0.0, 1.0);
+                atten *= atten;
+
+                vec4 l_fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+                float LdotN = clamp(dot(normalize(L), N), 0.0, 1.0);
+                float specular = 0.0;
+                if (LdotN > 0.0) {
+                    vec3 R = normalize(reflect(-L, N));  // reflection direction
+                    vec3 V = -normalize(pos); // viewer direction
+                    float specularAngle = clamp(dot(R, V), 0.0, 1.0);
+                    specular = pow(specularAngle, l.specularExponent);
+                }
+
+                vec3 Ia = Ka * diffuseColor.rgb * atten;
+                vec3 Id = Kd * diffuseColor.rgb * LdotN * atten;
+                vec3 Is = Ks * specularColor.rgb * pow(specular,specularExponent) * atten;
+                l_fragColor = vec4(Ia + Id + Is, 1.0);
+                return l_fragColor;
+            }
+
+            void main() {
+
+                if (lightOverride > 0.0) {
+                    gl_FragColor = diffuseColor.rgba;
+                } else {
+                    for (int i = 0; i < LIGHT_SOURCES; ++i) {
+                        if (lightAngleLimit[i] > -0.9) {
+                            SpotLight l = SpotLight(lightPositions[i], diffuseColor.rgb, specularColor.rgb, specularExponent, attenuation[i], lightDir[i], lightAngleLimit[i], lightAngleLimit[i]/2.0);
+                            gl_FragColor += enable[i] * calcSpotLight(v_coords, v_normal, l);
+                        } else {
+                            Light l = Light(lightPositions[i], diffuseColor.rgb, specularColor.rgb, specularExponent, attenuation[i]);
+                            gl_FragColor += enable[i] * calcPointLight(v_coords, v_normal, l);
+                        }
+                        
+                    }
+                }
+            }
+        </script>
+        <script src="gl-matrix.js"></script>
+        <script src="webgl-utils.js"></script>
+        <script src="models.js"></script>
+        <script src="modeldata.js"></script>
+        <script src="final.js"></script>
+        <script src="trackball-rotator.js"></script>
+    </head>
+    
+    <body onload="init()">
+        <p style="width: 600px; text-align: left">
+            <label><b>Programming Assignment 4 | Chen, Lawrence 45945125</b></label>
+            <br>
+            <label>Animate:<input type="checkbox" id="enableAnimate"</label>
+        </p>
+        <div id="canvas-holder">
+            <canvas width=720 height=720 id="myGLCanvas" style="background-color:red"></canvas>
+        </div>
+        <textarea id="debug-text", style="width: 800px; height: 300px; text-align:left; font-family:monospace" class="debug">
+        </textarea>
+    </body>
+</html>
