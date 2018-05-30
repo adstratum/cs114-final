@@ -155,8 +155,6 @@ function loadLights(viewMatrix) {
     var dbgstr = "";
     var transformPos = [];
     var attenuation = [];
-    var lightDir = [];
-    var lightAngles = [];
     var enable = [];
     for (var light of lights) {
         var trs = light.getWorldSpaceTransform();
@@ -170,27 +168,11 @@ function loadLights(viewMatrix) {
 
         enable.push(light.enable);
         attenuation.push(light.atten);
-        if (light.type == "spot") {
-            var tar = light.lightTarget.getWorldSpaceTransform();
-            var tmat = mat4.create();
-            mat4.multiply(tmat, viewMatrix, tar);
-            var ttrans = vec3.create();
-        
-            mat4.getTranslation(ttrans, tmat);
-            var direction = vec3.create();
-            vec3.subtract(direction, ttrans, ltrans);
-            lightDir.push(direction[0], direction[1], direction[2]);
-            lightAngles.push(light.spotAngle);
-        } else {
-            lightDir.push(0, 0, 1);
-            lightAngles.push(-1);
-        }
-        dbgstr += direction + lightAngles + ltrans + "\n";
+
+        dbgstr +=ltrans + "\n";
     }
     gl.uniform3fv(u_lightPositions, transformPos);
     gl.uniform1fv(u_attenuation, attenuation);
-    gl.uniform3fv(u_lightDir, lightDir);
-    gl.uniform1fv(u_lightAngleLimit, lightAngles);
     gl.uniform1fv(u_lightEnable, enable);
     //document.getElementById("debug-text").innerHTML = dbgstr;
 }
