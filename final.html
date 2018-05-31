@@ -16,6 +16,7 @@
         <script type="x-shader/x-vertex" id="vshader-source">
             attribute vec3 a_coords;
             attribute vec3 a_normal;
+            attribute vec2 a_texcoord;
             uniform mat4 modelview;
             uniform mat4 projection;
         
@@ -43,6 +44,7 @@
 
             varying vec3 v_coords;
             varying vec3 v_normal;
+            varying vec3 v_texcoord;
         
             uniform vec3 specularColor;
             uniform vec4 diffuseColor;
@@ -51,7 +53,9 @@
             uniform float attenuation[LIGHT_SOURCES];
             uniform float enable[LIGHT_SOURCES];
             uniform float lightOverride;
-        
+            
+            uniform sampler2D texture;
+
             uniform mat4 modelview;
             uniform mat3 normalMatrix;
         
@@ -80,6 +84,7 @@
 
             vec4 calcPointLight(const vec3 pos, const vec3 normal, const Light l) {
                 vec3 N = normalize(normalMatrix * normal); // normal vector
+                vec4 textureColor = texture2D(texture, v_texcoord); // texture color
                 vec3 L = l.lightPos - pos; // light direction
                 
                 float dist = distance(l.lightPos, pos);
