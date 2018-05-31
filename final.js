@@ -12,6 +12,8 @@ var index_buffer;       // Buffer for indices.
 var a_texture_buffer;
 var a_texcoords_buffer;
 
+var default_texture;
+var u_texture;
 var u_diffuseColor;     // Locations of uniform variables in the shader program
 var u_specularColor;
 var u_specularExponent;
@@ -99,6 +101,7 @@ function initGL() {
     u_drawMode = gl.getUniformLocation(prog, "drawMode");
     u_lightAngleLimit = gl.getUniformLocation(prog, "lightAngleLimit");
     u_lightEnable = gl.getUniformLocation(prog, "enable");
+    u_texture = gl.getUniformLocation(prog, "texture");
 
     a_coords_buffer = gl.createBuffer();
     a_normal_buffer = gl.createBuffer();
@@ -111,7 +114,11 @@ function initGL() {
 
     gl.uniform3f(u_specularColor, 0.5, 0.5, 0.5);     
     gl.uniform1f(u_specularExponent, 10);  
-    //gl.uniform4f(u_lightPosition, 1, 0, 0, 1); 
+    //gl.uniform4f(u_lightPosition, 1, 0, 0, 1);
+    default_texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, default_texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255, 255]));
 }
 
 function installModel(modelData) {
@@ -132,6 +139,8 @@ function installModel(modelData) {
     gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexTextureCoords, gl.STATIC_DRAW);
     gl.vertexAttribPointer(a_texcoords_loc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_texcoords_loc);
+
+    gl.uniform1i(u_texture, 0);
 }
 
 var drawModeOverride = 0;
