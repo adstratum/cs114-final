@@ -3,7 +3,7 @@ var root = new Node(
     nullT, 
     nullAnim,
     undefined);
-var ground = new Model("ground", uvCylinder(), new Material({diffuseColor: [0, .5, 0, 1], drawMode:DrawMode.TEXTURED_FLAT, texture:"grass.png"}), new Transform({rotateDeg: -90, rotateAxis: [1, 0, 0], scale: [15, 15, 1]}), nullAnim, root);
+var ground = new Model("ground", uvCylinder(), new Material({diffuseColor: [0, .5, 0, 1], drawMode:DrawMode.TEXTURED_PHONG, texture:"grass.png"}), new Transform({rotateDeg: -90, rotateAxis: [1, 0, 0], scale: [15, 15, 1]}), nullAnim, root);
 var road = new Model("road", ring(.6, 1), new Material({diffuseColor:[.5, .5, .5, 1],  drawMode:DrawMode.TEXTURED_FLAT, texture:"f-texture.png"}), new Transform({translate: [0, 0, .51], scale: [6, 6, 1]}), 
     new Transform({rotateDeg: .5, rotateAxis: [0, 0, 1], scale: [0, 0, 0]}), ground);
 var tree1 = new Tree("t1", new Transform({translate: [3, 6, .5], rotateDeg: 90, rotateAxis: [1, 0, 0], scale: [1, 1.8, 1]}), nullAnim, ground);

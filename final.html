@@ -48,6 +48,7 @@
             const int DRAW_PHONG = 2;
             const int DRAW_UVS = 3;
             const int DRAW_TEXTURED_FLAT = 4;
+            const int DRAW_TEXTURED_PHONG = 5;
 
             varying vec3 v_coords;
             varying vec3 v_normal;
@@ -72,15 +73,17 @@
 
             struct Light {
                 vec3 lightPos;
-                vec3 diffuseColor;
-                vec3 specularColor;
-                float specularExponent;
                 float attenuation;
             };
 
-            vec4 calcPointLight(const vec3 pos, const vec3 normal, const Light l) {
+            struct Material {
+                vec3 diffuseColor;
+                vec3 specularColor;
+                float specularExponent;
+            };
+
+            vec4 calcPointLight(const vec3 pos, const vec3 normal, const Light l, const Material m) {
                 vec3 N = normalize(normalMatrix * normal); // normal vector
-                vec4 textureColor = texture2D(texture, v_texcoord); // texture color
                 vec3 L = l.lightPos - pos; // light direction
                 
                 float dist = distance(l.lightPos, pos);
@@ -95,12 +98,12 @@
                     vec3 R = normalize(reflect(-L, N));  // reflection direction
                     vec3 V = -normalize(pos); // viewer direction
                     float specularAngle = clamp(dot(R, V), 0.0, 1.0);
-                    specular = pow(specularAngle, l.specularExponent);
+                    specular = pow(specularAngle, m.specularExponent);
                 }
 
-                vec3 Ia = Ka * diffuseColor.rgb * atten;
-                vec3 Id = Kd * diffuseColor.rgb * LdotN * atten;
-                vec3 Is = Ks * specularColor.rgb * pow(specular,specularExponent) * atten;
+                vec3 Ia = Ka * m.diffuseColor.rgb * atten;
+                vec3 Id = Kd * m.diffuseColor.rgb * LdotN * atten;
+                vec3 Is = Ks * m.specularColor.rgb * pow(specular,m.specularExponent) * atten;
                 l_fragColor = vec4(Ia + Id + Is, 1.0);
                 return l_fragColor;
             }
@@ -109,10 +112,19 @@
 
                 if (drawMode == DRAW_FLAT) {
                     gl_FragColor = diffuseColor.rgba;
-                } else if (drawMode == DRAW_PHONG) {
+                } else if (drawMode == DRAW_PHONG || drawMode == DRAW_TEXTURED_PHONG) {
                     for (int i = 0; i < LIGHT_SOURCES; ++i) {
-                        Light l = Light(lightPositions[i], diffuseColor.rgb, specularColor.rgb, specularExponent, attenuation[i]);
-                        gl_FragColor += enable[i] * calcPointLight(v_coords, v_normal, l);
+                        Light l = Light(lightPositions[i], attenuation[i]);
+                        Material m;
+                        if (drawMode == DRAW_PHONG){
+                            m = Material(diffuseColor.rgb, specularColor.rgb, specularExponent);
+                        }
+                        if (drawMode == DRAW_TEXTURED_PHONG) {
+                            vec4 textureColor = texture2D(texture, v_texcoord);
+                            m = Material(textureColor.rgb, specularColor.rgb, specularExponent);
+                        }
+                        
+                        gl_FragColor += enable[i] * calcPointLight(v_coords, v_normal, l, m);
                     }
                 } else if (drawMode == DRAW_UVS) {
                     gl_FragColor = vec4(v_texcoord, 0.0, 1.0);
