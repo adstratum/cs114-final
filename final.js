@@ -134,7 +134,7 @@ function installModel(modelData) {
     gl.enableVertexAttribArray(a_texcoords_loc);
 }
 
-var drawModeOverride = 3;
+var drawModeOverride = 0;
 
 function drawModel(node, modelview) {
     gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);

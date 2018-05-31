@@ -47,6 +47,7 @@
             const int DRAW_FLAT = 1;
             const int DRAW_PHONG = 2;
             const int DRAW_UVS = 3;
+            const int DRAW_TEXTURED_FLAT = 4;
 
             varying vec3 v_coords;
             varying vec3 v_normal;
@@ -115,6 +116,8 @@
                     }
                 } else if (drawMode == DRAW_UVS) {
                     gl_FragColor = vec4(v_texcoord, 0.0, 1.0);
+                } else if (drawMode == DRAW_TEXTURED_FLAT) {
+                    gl_FragColor = texture2D(texture, v_texcoord);
                 }
             }
         </script>

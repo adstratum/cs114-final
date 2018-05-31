@@ -84,22 +84,34 @@ class Transform {
     }
 }
 
-DrawMode = {FLAT:1, PHONG:2, UVS:3}
+DrawMode = {FLAT:1, PHONG:2, UVS:3, TEXTURED_FLAT:4, TEXTURED_PHONG:5}
 
 class Material {
-    /**
-     * Encapsulates the diffuse and specular properties of a model.
-     * 
+    
+    /** named-argument version of constructor, specifying
      * @param {vec4} diffuseColor 
      * @param {vec4} specularColor 
      * @param {float} specularExponent 
-     * @param {int} drawMode
-     */
-    constructor(diffuseColor, specularColor, specularExponent, drawMode) {
-        this.diffuseColor = (typeof diffuseColor == 'undefined') ? vec4.fromValues(1, 1, 1, 1) : diffuseColor;
-        this.specularColor = (typeof specularColor == 'undefined') ? vec4.fromValues(1, 1, 1, 1) : specularColor;
-        this.specularExponent = (typeof specularExponent == 'undefined') ? 10 : specularExponent;
-        this.drawMode = (typeof drawMode == 'undefined') ? DrawMode.PHONG : drawMode;
+     * @param {enum} drawMode
+    */
+    constructor(kargs) {
+        this.diffuseColor = vec4.fromValues(1, 1, 1, 1);
+        this.specularColor = vec4.fromValues(1, 1, 1, 1);
+        this.specularExponent = 10;
+        this.drawMode = DrawMode.PHONG;
+        this.texture = null;
+        if (kargs) {
+            if ('diffuseColor' in kargs)
+                this.diffuseColor = kargs.diffuseColor;
+            if ('specularColor' in kargs)
+                this.specularColor = kargs.specularColor;
+            if ('specularExponent' in kargs)
+                this.specularExponent = kargs.specularExponent;
+            if ('drawMode' in kargs)
+                this.drawMode = kargs.drawMode;
+            if ('texture' in kargs)
+                this.texture = kargs.texture;
+        }
     }
 }
 
@@ -198,7 +210,6 @@ class Model extends Node {
     }
 }
 
-var dMat = new Material([1,1,1,1], [1,1,1,1], 10);
 var nullT = new Transform({translate: [0, 0, 0], rotateDeg : 0, rotateAxis : [0,0,1]});
 var nullAnim = new Transform({rotateDeg:0, rotateAxis: [0, 0, 0], scale: [0, 0, 0]});
 
@@ -216,8 +227,8 @@ class Tree extends Node {
         super(name, transform, animate, nodeParent);
         this.inheritScale = true;
         
-        var trm = new Material([.55, .27, .07, 1]);
-        var brm = new Material([0, .5, .0, 1]);
+        var trm = new Material({diffuseColor: [.55, .27, .07, 1]});
+        var brm = new Material({diffuseColor: [0, .5, .0, 1]});
         var trt = new Transform({translate: [0, 0, 0], rotateDeg: -90, rotateAxis: [1,0,0], scale: [.5, .5, 1]});
         var brt = new Transform({translate: [0, 1, 0], rotateDeg: -90, rotateAxis: [1,0,0], scale: [1, 1, 1]});
 
@@ -241,8 +252,8 @@ class Wheel extends Node {
         var radConst = (360/6) * (Math.PI / 180);
         this.inheritScale = true;
 
-        var tireMat = new Material([.2, .2, .2, 1]);
-        var structMat = new Material([.5, .5, .5, 1]);
+        var tireMat = new Material({diffuseColor: [.2, .2, .2, 1]});
+        var structMat = new Material({diffuseColor: [.5, .5, .5, 1]});
 
         this.tire = new Model(name + " tire", uvTorus(2, 1), tireMat, new Transform(), nullAnim, this);
         this.spokes = [];
@@ -269,8 +280,8 @@ class Car extends Node {
         super(name, transform, animate, nodeParent);
 
         this.wheelSpeed = 3;
-        var bodyMat = new Material([.7, 0, 0, 1]);
-        var headMat = new Material([.8, .8, 0, 1]);
+        var bodyMat = new Material({diffuseColor: [.7, 0, 0, 1]});
+        var headMat = new Material({diffuseColor: [.8, .8, 0, 1]});
 
         this.body = new Model(name + " body", cube(), bodyMat, new Transform({scale: [2, 0.5, 1]}), nullAnim, this);
         this.upper = new Model(name + " upper", cube(), bodyMat, new Transform({translate: [0, .5, 0], scale: [1, 0.5, 1]}), nullAnim, this);
