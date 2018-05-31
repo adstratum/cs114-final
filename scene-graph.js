@@ -109,8 +109,10 @@ class Material {
                 this.specularExponent = kargs.specularExponent;
             if ('drawMode' in kargs)
                 this.drawMode = kargs.drawMode;
-            if ('texture' in kargs)
-                this.texture = kargs.texture;
+            if ('texture' in kargs) {
+                this.texture = new Image();
+                this.texture.src = kargs.texture;
+            }
         }
     }
 }

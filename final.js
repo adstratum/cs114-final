@@ -12,7 +12,7 @@ var index_buffer;       // Buffer for indices.
 var a_texture_buffer;
 var a_texcoords_buffer;
 
-var default_texture;
+var texture0;
 var u_texture;
 var u_diffuseColor;     // Locations of uniform variables in the shader program
 var u_specularColor;
@@ -113,23 +113,12 @@ function initGL() {
     gl.enable(gl.DEPTH_TEST);
 
     gl.uniform3f(u_specularColor, 0.5, 0.5, 0.5);     
-    gl.uniform1f(u_specularExponent, 10);  
-    //gl.uniform4f(u_lightPosition, 1, 0, 0, 1);
-    default_texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, default_texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 255, 255]));
+    gl.uniform1f(u_specularExponent, 10);
+    texture0 = gl.createTexture();
 
-    var image = new Image();
-    image.src = "f-texture.png";
-    image.addEventListener('load', function() {
-        gl.bindTexture(gl.TEXTURE_2D, default_texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-    });
 }
 
-function installModel(modelData) {
+function installModel(modelData, texture) {
     gl.bindBuffer(gl.ARRAY_BUFFER, a_coords_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
     gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
@@ -148,6 +137,11 @@ function installModel(modelData) {
     gl.vertexAttribPointer(a_texcoords_loc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_texcoords_loc);
 
+    if (texture != null) {
+        gl.bindTexture(gl.TEXTURE_2D, texture0);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, texture);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    }
     gl.uniform1i(u_texture, 0);
 }
 
@@ -155,7 +149,7 @@ var drawModeOverride = 0;
 
 function drawModel(node, modelview) {
     gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
-    installModel(node.mesh);
+    installModel(node.mesh, node.material.texture);
     if (drawModeOverride == 0) {
         gl.uniform1i(u_drawMode, node.material.drawMode);
     } else {
