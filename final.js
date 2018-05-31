@@ -4,6 +4,7 @@ var gl;   // The webgl context.
 
 var a_coords_loc;       // Location of the a_coords attribute variable in the shader program.
 var a_normal_loc;       // Location of a_normal attribute.
+var a_texcoords_loc;
 
 var a_coords_buffer;    // Buffer for a_coords.
 var a_normal_buffer;    // Buffer for a_normal.
@@ -83,6 +84,8 @@ function initGL() {
     gl.useProgram(prog);
     a_coords_loc =  gl.getAttribLocation(prog, "a_coords");
     a_normal_loc =  gl.getAttribLocation(prog, "a_normal");
+    a_texcoords_loc = gl.getAttribLocation(prog, "a_texcoords");
+
     u_modelview = gl.getUniformLocation(prog, "modelview");
     u_projection = gl.getUniformLocation(prog, "projection");
     u_normalMatrix =  gl.getUniformLocation(prog, "normalMatrix");
@@ -116,15 +119,19 @@ function installModel(modelData) {
     gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
     gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_coords_loc);
+
     gl.bindBuffer(gl.ARRAY_BUFFER, a_normal_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
     gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_normal_loc);
+
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index_buffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
+
     gl.bindBuffer(gl.ARRAY_BUFFER, a_texcoords_buffer);
-    gl.vertexAttribPointer(a_texcoords_buffer, 2, gl.FLOAT, false, 0, 0);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.texCoords, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexTextureCoords, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(a_texcoords_loc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(a_texcoords_loc);
 }
 
 function drawModel(node, modelview) {
