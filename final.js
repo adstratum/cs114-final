@@ -8,6 +8,8 @@ var a_normal_loc;       // Location of a_normal attribute.
 var a_coords_buffer;    // Buffer for a_coords.
 var a_normal_buffer;    // Buffer for a_normal.
 var index_buffer;       // Buffer for indices.
+var a_texture_buffer;
+var a_texcoords_buffer;
 
 var u_diffuseColor;     // Locations of uniform variables in the shader program
 var u_specularColor;
@@ -98,6 +100,9 @@ function initGL() {
     a_coords_buffer = gl.createBuffer();
     a_normal_buffer = gl.createBuffer();
     index_buffer = gl.createBuffer();
+    a_texture_buffer = gl.createBuffer();
+    a_texcoords_buffer = gl.createBuffer();
+
     gl.clearColor(0.0,0.0,0.0,1.0);
     gl.enable(gl.DEPTH_TEST);
 
@@ -117,6 +122,9 @@ function installModel(modelData) {
     gl.enableVertexAttribArray(a_normal_loc);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index_buffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, a_texcoords_buffer);
+    gl.vertexAttribPointer(a_texcoords_buffer, 2, gl.FLOAT, false, 0, 0);
+    gl.bufferData(gl.ARRAY_BUFFER, modelData.texCoords, gl.STATIC_DRAW);
 }
 
 function drawModel(node, modelview) {
