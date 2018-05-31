@@ -23,6 +23,7 @@
             varying vec3 v_normal;
             varying vec3 v_coords;
             varying vec3 v_worldcoords;
+            varying vec3 v_texcoord;
             void main() {
                 // just compute vertex positions in vertex shader; pass coordinates + normals
                 // to fragment shader to compute more accurate per-pixel values.
@@ -32,6 +33,7 @@
         
                 v_normal = a_normal;
                 v_coords = eyeSpaceCoords.xyz;
+                v_texcoord = a_texcoord;
             }
         </script>
         <script type="x-shader/x-fragment" id="fshader-source">
