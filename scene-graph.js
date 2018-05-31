@@ -84,6 +84,8 @@ class Transform {
     }
 }
 
+DrawMode = {FLAT:1, PHONG:2, UVS:3}
+
 class Material {
     /**
      * Encapsulates the diffuse and specular properties of a model.
@@ -91,11 +93,13 @@ class Material {
      * @param {vec4} diffuseColor 
      * @param {vec4} specularColor 
      * @param {float} specularExponent 
+     * @param {int} drawMode
      */
-    constructor(diffuseColor, specularColor, specularExponent) {
+    constructor(diffuseColor, specularColor, specularExponent, drawMode) {
         this.diffuseColor = (typeof diffuseColor == 'undefined') ? vec4.fromValues(1, 1, 1, 1) : diffuseColor;
         this.specularColor = (typeof specularColor == 'undefined') ? vec4.fromValues(1, 1, 1, 1) : specularColor;
         this.specularExponent = (typeof specularExponent == 'undefined') ? 10 : specularExponent;
+        this.drawMode = (typeof drawMode == 'undefined') ? DrawMode.PHONG : drawMode;
     }
 }
 

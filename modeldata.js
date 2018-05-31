@@ -13,7 +13,7 @@ var tree3 = new Tree("t4", new Transform({translate: [-4, -6, .5], rotateDeg: 90
 
 var car = new Car("car", new Transform({translate: [0, -5, .55], rotateDeg: 90, rotateAxis: [1, 0, 0]}), nullAnim, road);
 var lightpost = new Model("lightpost base", uvCylinder(), dMat, new Transform({translate: [0, 0, 1], scale: [0.5, 0.5, 2]}), nullAnim, ground);
-var lightmodel = new Model("lightpost bulb", uvSphere(), new Material([1, 1, 0, 1]), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
+var lightmodel = new Model("lightpost bulb", uvSphere(), new Material([1, 1, 0, 1], null, null, DrawMode.FLAT), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
 lightmodel.lightOverride = true;

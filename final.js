@@ -23,7 +23,7 @@ var u_lightPositions;
 var u_lightAngleLimit;
 var u_lightDir;
 var u_attenuation;
-var u_lightOverride;
+var u_drawMode;
 var u_lightAngleLimit;
 var u_lightEnable;
 
@@ -96,7 +96,7 @@ function initGL() {
     u_lightPositions = gl.getUniformLocation(prog, "lightPositions");
     u_attenuation = gl.getUniformLocation(prog, "attenuation");
     u_lightDir = gl.getUniformLocation(prog, "lightDir");
-    u_lightOverride = gl.getUniformLocation(prog, "lightOverride");
+    u_drawMode = gl.getUniformLocation(prog, "drawMode");
     u_lightAngleLimit = gl.getUniformLocation(prog, "lightAngleLimit");
     u_lightEnable = gl.getUniformLocation(prog, "enable");
 
@@ -134,13 +134,19 @@ function installModel(modelData) {
     gl.enableVertexAttribArray(a_texcoords_loc);
 }
 
+var drawModeOverride = 3;
+
 function drawModel(node, modelview) {
     gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
     installModel(node.mesh);
-    if (node.lightOverride) {
-        gl.uniform1f(u_lightOverride, 1.0);
+    if (drawModeOverride == 0) {
+        if (node.material.drawMode == DrawMode.FLAT) {
+            gl.uniform1i(u_drawMode, 1);
+        } else {
+            gl.uniform1i(u_drawMode, 2);
+        }
     } else {
-        gl.uniform1f(u_lightOverride, 0.0);
+        gl.uniform1i(u_drawMode, drawModeOverride);
     }
     mat3.normalFromMat4(normalMatrix, modelview);
     gl.uniformMatrix3fv(u_normalMatrix, false, normalMatrix);

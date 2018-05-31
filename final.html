@@ -42,7 +42,11 @@
             #else
                 precision mediump float;
             #endif
-            #define LIGHT_SOURCES 1
+            
+            const int LIGHT_SOURCES = 1;
+            const int DRAW_FLAT = 1;
+            const int DRAW_PHONG = 2;
+            const int DRAW_UVS = 3;
 
             varying vec3 v_coords;
             varying vec3 v_normal;
@@ -54,7 +58,7 @@
             uniform vec3 lightPositions[LIGHT_SOURCES];
             uniform float attenuation[LIGHT_SOURCES];
             uniform float enable[LIGHT_SOURCES];
-            uniform float lightOverride;
+            uniform int drawMode;
             
             uniform sampler2D texture;
 
@@ -102,13 +106,15 @@
 
             void main() {
 
-                if (lightOverride > 0.0) {
+                if (drawMode == DRAW_FLAT) {
                     gl_FragColor = diffuseColor.rgba;
-                } else {
+                } else if (drawMode == DRAW_PHONG) {
                     for (int i = 0; i < LIGHT_SOURCES; ++i) {
                         Light l = Light(lightPositions[i], diffuseColor.rgb, specularColor.rgb, specularExponent, attenuation[i]);
                         gl_FragColor += enable[i] * calcPointLight(v_coords, v_normal, l);
                     }
+                } else if (drawMode == DRAW_UVS) {
+                    gl_FragColor = vec4(v_texcoord, 0.0, 1.0);
                 }
             }
         </script>
