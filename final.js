@@ -140,11 +140,7 @@ function drawModel(node, modelview) {
     gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
     installModel(node.mesh);
     if (drawModeOverride == 0) {
-        if (node.material.drawMode == DrawMode.FLAT) {
-            gl.uniform1i(u_drawMode, 1);
-        } else {
-            gl.uniform1i(u_drawMode, 2);
-        }
+        gl.uniform1i(u_drawMode, node.material.drawMode);
     } else {
         gl.uniform1i(u_drawMode, drawModeOverride);
     }
