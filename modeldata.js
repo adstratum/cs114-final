@@ -1,3 +1,6 @@
+var nullT = new Transform({translate: [0, 0, 0], rotateDeg : 0, rotateAxis : [0,0,1]});
+var nullAnim = new Transform({rotateDeg:0, rotateAxis: [0, 0, 0], scale: [0, 0, 0]});
+
 var root = new Node(
     "root",
     nullT, 
@@ -15,7 +18,5 @@ var car = new Car("car", new Transform({translate: [0, -5, .55], rotateDeg: 90, 
 var lightpost = new Model("lightpost base", uvCylinder(), new Material(), new Transform({translate: [0, 0, 1], scale: [0.5, 0.5, 2]}), nullAnim, ground);
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseColor: [1, 1, 0, 1], drawMode:DrawMode.FLAT}), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
-
-lightmodel.lightOverride = true;
 
 lights = [lightbulb];

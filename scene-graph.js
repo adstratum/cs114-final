@@ -93,6 +93,7 @@ class Material {
      * @param {vec4} specularColor 
      * @param {float} specularExponent 
      * @param {enum} drawMode
+     * @param {url} texture
     */
     constructor(kargs) {
         this.diffuseColor = vec4.fromValues(1, 1, 1, 1);
@@ -211,10 +212,6 @@ class Model extends Node {
         this.material = material;
     }
 }
-
-var nullT = new Transform({translate: [0, 0, 0], rotateDeg : 0, rotateAxis : [0,0,1]});
-var nullAnim = new Transform({rotateDeg:0, rotateAxis: [0, 0, 0], scale: [0, 0, 0]});
-
 
 class Tree extends Node {
     /**

@@ -211,7 +211,7 @@ function draw() {
     var viewMatrix = rotator.getViewMatrix();
     loadLights(viewMatrix);
 
-    // defined in modeldata.js
+    // root defined in modeldata.js
     rdraw(root, viewMatrix);
 }
 
