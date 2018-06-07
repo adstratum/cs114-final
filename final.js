@@ -35,7 +35,7 @@ var projection = mat4.create();    // projection matrix
 var normalMatrix = mat3.create();  // matrix, derived from modelview matrix, for transforming normal vectors
 var rotator;
 
-var cameraNode = new Node ("camera", new Transform({translate: [0, -1, 0], rotateDeg : 0, rotateAxis : [0,0,1]}), nullAnim, null);
+var cameraNode = new Node ("camera", new Transform({translate: [0, -3, -4], rotateDeg : 0, rotateAxis : [0,0,1]}), nullAnim, null);
 cameraNode.forwardV = vec3.fromValues(0, 0, 1);
 cameraNode.rightV = vec3.fromValues(1, 0, 0);
 cameraNode.yaw = 0;
@@ -54,14 +54,15 @@ function handleKeyUp(event) {
 
 var deg2rad = Math.PI / 180;
 var rad2deg = 180 / Math.PI;
+var rightAngle = Math.PI / 2;
 
 var forwardSpeed = 0.25;
 var rightSpeed = 0.25;
-var yawSpeedRadians = 0.5;
+var upSpeed = 0.25;
+var yawSpeedRadians = 0.25;
+var pitchSpeedRadians = 0.25;
 
 function handleKeys() {
-    var forwardDelta = 0;
-    var yawDelta = 0;
     if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
         // Up cursor key or W
         cameraNode.forwardDelta = forwardSpeed;
@@ -73,22 +74,57 @@ function handleKeys() {
     }
     
     if (currentlyPressedKeys[65]) {
-        cameraNode.yawDelta = -yawSpeedRadians;
+        //A
+        cameraNode.rightDelta = -rightSpeed;
     } else if (currentlyPressedKeys[68]) {
+        //D
+        cameraNode.rightDelta = rightSpeed;
+    } else {
+        cameraNode.rightDelta = 0;
+    }
+
+    if (currentlyPressedKeys[32]) {
+        //space
+        cameraNode.upDelta = upSpeed;
+    } else if (currentlyPressedKeys[17]) {
+        //control
+        cameraNode.upDelta = -upSpeed;
+    } else {
+        cameraNode.upDelta = 0;
+    }
+
+    if (currentlyPressedKeys[74]) {
+        //J
+        cameraNode.yawDelta = -yawSpeedRadians;
+    } else if (currentlyPressedKeys[76]) {
+        //L
         cameraNode.yawDelta = yawSpeedRadians;
     } else {
         cameraNode.yawDelta = 0;
     }
 
-    cameraNode.pitchDelta = 0;
+
+    if (currentlyPressedKeys[73]) {
+        //I
+        cameraNode.pitchDelta = -pitchSpeedRadians;
+    } else if (currentlyPressedKeys[75]) {
+        //K
+        cameraNode.pitchDelta = pitchSpeedRadians;
+    } else {
+        cameraNode.pitchDelta = 0;
+    }
+
 }
 
 cameraNode.animate = function(delta) {
     cameraNode.yaw += delta * cameraNode.yawDelta;
-
+    cameraNode.pitch += delta * cameraNode.pitchDelta;
     cameraNode.transform.rotate.setRotationFromEuler(0, cameraNode.yaw * rad2deg, 0);
-    cameraNode.transform.translate[0] += cameraNode.forwardDelta * -Math.sin(cameraNode.yaw);
-    cameraNode.transform.translate[2] += cameraNode.forwardDelta * Math.cos(cameraNode.yaw);
+    cameraNode.transform.translate[0] += delta * cameraNode.forwardDelta * -Math.sin(cameraNode.yaw)
+                                       + delta * cameraNode.rightDelta * -Math.sin(cameraNode.yaw + rightAngle);
+    cameraNode.transform.translate[1] += delta * -cameraNode.upDelta;
+    cameraNode.transform.translate[2] += delta * cameraNode.forwardDelta * Math.cos(cameraNode.yaw)
+                                       + delta * cameraNode.rightDelta * Math.cos(cameraNode.yaw + rightAngle);
     document.getElementById("debug-text").innerHTML = cameraNode.transform;
 }
 
