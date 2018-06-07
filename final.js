@@ -35,6 +35,35 @@ var projection = mat4.create();    // projection matrix
 var normalMatrix = mat3.create();  // matrix, derived from modelview matrix, for transforming normal vectors
 var rotator;
 
+var cameraNode = new Node ("camera", nullT, nullAnim, null);
+var currentlyPressedKeys = {};
+
+function handleKeyDown(event) {
+    currentlyPressedKeys[event.keyCode] = true;
+}
+
+
+function handleKeyUp(event) {
+    currentlyPressedKeys[event.keyCode] = false;
+}
+
+function handleKeys() {
+    var pitch = 0;
+    var yaw = 0;
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
+        // Up cursor key or W
+        cameraNode.animateM.translate[2] = 0.3;
+    } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
+        // Down cursor key or S
+        cameraNode.animateM.translate[2] = -0.3;
+    } else {
+        cameraNode.animateM.translate[2] = 0;
+    }
+}
+
 // Load glsl program from html sources.
 function createProgram(gl, vertexShaderID, fragmentShaderID) {
     function getTextContent( elementID ) {
@@ -205,10 +234,16 @@ function loadLights(viewMatrix) {
     //document.getElementById("debug-text").innerHTML = dbgstr;
 }
 
+function getViewMatrix() {
+    return cameraNode.getLocalTransform();
+}
+
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
-    var viewMatrix = rotator.getViewMatrix();
+    document.getElementById("debug-text").innerHTML = cameraNode.animateM.getTransformMatrix() + cameraNode.transform.getTransformMatrix();
+
+    var viewMatrix = getViewMatrix();
     loadLights(viewMatrix);
 
     // root defined in modeldata.js
@@ -247,8 +282,11 @@ function init() {
     }
     projection = mat4.perspective(projection, Math.PI/5,canvas.width / canvas.height,1,50);
 
+    document.onkeydown = handleKeyDown;
+    document.onkeyup = handleKeyUp;
+
     document.getElementById("enableAnimate").checked = false;
-    rotator = new TrackballRotator(canvas, draw, 30);
+    //rotator = new TrackballRotator(canvas, draw, 30);
 
     draw();
     requestAnimationFrame(tick);
@@ -259,6 +297,8 @@ function tick(timestamp) {
     var delta = timestamp - prev;
     prev = timestamp;
     requestAnimationFrame(tick);
+    cameraNode.animate(delta / 100);
+    handleKeys();
     draw();
     if (document.getElementById("enableAnimate").checked)
         animate(root, delta / 100);

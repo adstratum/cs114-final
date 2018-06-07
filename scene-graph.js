@@ -11,6 +11,10 @@ class Rotation {
         quat.setAxisAngle(this.quat, rotateAxis, rotateRad);
     }
 
+    setRotationFromEuler(x, y, z) {
+        quat.fromEuler(this.quat, x, y, z);
+    }
+
     getQuat() {
         return this.quat;
     }
