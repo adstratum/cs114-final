@@ -36,6 +36,10 @@ var normalMatrix = mat3.create();  // matrix, derived from modelview matrix, for
 var rotator;
 
 var cameraNode = new Node ("camera", new Transform({translate: [0, -1, 0], rotateDeg : 0, rotateAxis : [0,0,1]}), nullAnim, null);
+cameraNode.forwardV = vec3.fromValues(0, 0, 1);
+cameraNode.rightV = vec3.fromValues(1, 0, 0);
+cameraNode.yaw = 0;
+cameraNode.pitch = 0;
 
 var currentlyPressedKeys = {};
 
@@ -48,26 +52,44 @@ function handleKeyUp(event) {
     currentlyPressedKeys[event.keyCode] = false;
 }
 
+var deg2rad = Math.PI / 180;
+var rad2deg = 180 / Math.PI;
+
+var forwardSpeed = 0.25;
+var rightSpeed = 0.25;
+var yawSpeedRadians = 0.5;
+
 function handleKeys() {
-    var pitch = 0;
-    var yaw = 0;
-    var x = 0;
-    var y = 0;
-    var z = 0;
+    var forwardDelta = 0;
+    var yawDelta = 0;
     if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
         // Up cursor key or W
-        cameraNode.animateM.translate[2] = 0.3;
+        cameraNode.forwardDelta = forwardSpeed;
     } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
         // Down cursor key or S
-        cameraNode.animateM.translate[2] = -0.3;
-    } else if (currentlyPressedKeys[65]) {
-        cameraNode.animateM.rotate.setRotationFromEuler(0, -1, 0);
-    } else if (currentlyPressedKeys[68]) {
-        cameraNode.animateM.rotate.setRotationFromEuler(0, 1, 0);
+        cameraNode.forwardDelta = -forwardSpeed;
     } else {
-        cameraNode.animateM.translate = vec3.fromValues(0, 0, 0);
-        cameraNode.animateM.rotate.setRotationFromEuler(0, 0, 0);
+        cameraNode.forwardDelta = 0;
     }
+    
+    if (currentlyPressedKeys[65]) {
+        cameraNode.yawDelta = -yawSpeedRadians;
+    } else if (currentlyPressedKeys[68]) {
+        cameraNode.yawDelta = yawSpeedRadians;
+    } else {
+        cameraNode.yawDelta = 0;
+    }
+
+    cameraNode.pitchDelta = 0;
+}
+
+cameraNode.animate = function(delta) {
+    cameraNode.yaw += delta * cameraNode.yawDelta;
+
+    cameraNode.transform.rotate.setRotationFromEuler(0, cameraNode.yaw * rad2deg, 0);
+    cameraNode.transform.translate[0] += cameraNode.forwardDelta * -Math.sin(cameraNode.yaw);
+    cameraNode.transform.translate[2] += cameraNode.forwardDelta * Math.cos(cameraNode.yaw);
+    document.getElementById("debug-text").innerHTML = cameraNode.transform;
 }
 
 // Load glsl program from html sources.
@@ -237,7 +259,6 @@ function loadLights(viewMatrix) {
     gl.uniform3fv(u_lightPositions, transformPos);
     gl.uniform1fv(u_attenuation, attenuation);
     gl.uniform1fv(u_lightEnable, enable);
-    //document.getElementById("debug-text").innerHTML = dbgstr;
 }
 
 function getViewMatrix() {
@@ -255,8 +276,6 @@ function getViewMatrix() {
 
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
-    //document.getElementById("debug-text").innerHTML = cameraNode.animateM.getTransformMatrix() + cameraNode.transform.getTransformMatrix();
 
     var viewMatrix = getViewMatrix();
     loadLights(viewMatrix);
@@ -295,7 +314,7 @@ function init() {
             "<p>Sorry, could not initialize the WebGL graphics context:" + e + "</p>";
         return;
     }
-    projection = mat4.perspective(projection, Math.PI/5,canvas.width / canvas.height,1,50);
+    projection = mat4.perspective(projection, Math.PI / 2,canvas.width / canvas.height,1,50);
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
@@ -312,8 +331,8 @@ function tick(timestamp) {
     var delta = timestamp - prev;
     prev = timestamp;
     requestAnimationFrame(tick);
-    cameraNode.animate(delta / 100);
     handleKeys();
+    cameraNode.animate(delta / 100);
     draw();
     if (document.getElementById("enableAnimate").checked)
         animate(root, delta / 100);
