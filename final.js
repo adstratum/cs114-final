@@ -35,7 +35,8 @@ var projection = mat4.create();    // projection matrix
 var normalMatrix = mat3.create();  // matrix, derived from modelview matrix, for transforming normal vectors
 var rotator;
 
-var cameraNode = new Node ("camera", nullT, nullAnim, null);
+var cameraNode = new Node ("camera", new Transform({translate: [0, -1, 0], rotateDeg : 0, rotateAxis : [0,0,1]}), nullAnim, null);
+
 var currentlyPressedKeys = {};
 
 function handleKeyDown(event) {
@@ -59,8 +60,13 @@ function handleKeys() {
     } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
         // Down cursor key or S
         cameraNode.animateM.translate[2] = -0.3;
+    } else if (currentlyPressedKeys[65]) {
+        cameraNode.animateM.rotate.setRotationFromEuler(0, -1, 0);
+    } else if (currentlyPressedKeys[68]) {
+        cameraNode.animateM.rotate.setRotationFromEuler(0, 1, 0);
     } else {
-        cameraNode.animateM.translate[2] = 0;
+        cameraNode.animateM.translate = vec3.fromValues(0, 0, 0);
+        cameraNode.animateM.rotate.setRotationFromEuler(0, 0, 0);
     }
 }
 
@@ -235,13 +241,22 @@ function loadLights(viewMatrix) {
 }
 
 function getViewMatrix() {
-    return cameraNode.getLocalTransform();
+    // override getTransformMatrix from Node for the Camera.
+    var out = mat4.create();
+    var rot = mat4.create();
+    var trn = mat4.create();
+    mat4.translate(trn, trn, cameraNode.transform.translate);
+    mat4.fromQuat(rot, cameraNode.transform.rotate.getQuat());
+    mat4.multiply(out, out, rot);
+    mat4.multiply(out, out, trn);
+    
+    return out;
 }
 
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
-    document.getElementById("debug-text").innerHTML = cameraNode.animateM.getTransformMatrix() + cameraNode.transform.getTransformMatrix();
+    //document.getElementById("debug-text").innerHTML = cameraNode.animateM.getTransformMatrix() + cameraNode.transform.getTransformMatrix();
 
     var viewMatrix = getViewMatrix();
     loadLights(viewMatrix);
