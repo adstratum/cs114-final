@@ -119,7 +119,13 @@ function handleKeys() {
 cameraNode.animate = function(delta) {
     cameraNode.yaw += delta * cameraNode.yawDelta;
     cameraNode.pitch += delta * cameraNode.pitchDelta;
-    cameraNode.transform.rotate.setRotationFromEuler(0, cameraNode.yaw * rad2deg, 0);
+
+    var camQuat = quat.create();
+    quat.rotateX(camQuat, camQuat, cameraNode.pitch);
+    quat.rotateY(camQuat, camQuat, cameraNode.yaw);
+
+    cameraNode.transform.rotate.quat = camQuat;
+    //cameraNode.transform.rotate.setRotationFromEuler(Math.cos(cameraNode.yaw) * cameraNode.pitch * rad2deg, cameraNode.yaw * rad2deg,  Math.sin(cameraNode.yaw) * cameraNode.pitch * rad2deg);
     cameraNode.transform.translate[0] += delta * cameraNode.forwardDelta * -Math.sin(cameraNode.yaw)
                                        + delta * cameraNode.rightDelta * -Math.sin(cameraNode.yaw + rightAngle);
     cameraNode.transform.translate[1] += delta * -cameraNode.upDelta;
