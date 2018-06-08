@@ -60,6 +60,8 @@ function handleKeyUp(event) {
 
 function handleFocusLoss(event) {
     currentlyPressedKeys = {};
+    cameraNode.mouseYawDelta = 0;
+    cameraNode.mousePitchDelta = 0;
 }
 
 function handleOnClick(event) {
@@ -168,6 +170,9 @@ cameraNode.animate = function(delta) {
     cameraNode.transform.translate[2] += delta * cameraNode.forwardDelta * Math.cos(cameraNode.yaw)
                                        + delta * cameraNode.rightDelta * Math.cos(cameraNode.yaw + rightAngle);
     document.getElementById("debug-text").innerHTML = cameraNode.transform;
+
+    cameraNode.mouseYawDelta = 0;
+    cameraNode.mousePitchDelta = 0;
 }
 
 // Load glsl program from html sources.
