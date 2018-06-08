@@ -42,6 +42,8 @@ cameraNode.yaw = 0;
 cameraNode.pitch = 0;
 cameraNode.yawDelta = 0;
 cameraNode.pitchDelta = 0;
+cameraNode.mouseYawDelta = 0;
+cameraNode.mousePitchDelta = 0;
 
 var currentlyPressedKeys = {};
 
@@ -77,8 +79,8 @@ var pointerYawRadians = 0.01;
 var pointerPitchRadians = 0.01;
 
 function handlePointer(event) {
-    cameraNode.yawDelta = event.movementX * pointerPitchRadians;
-    cameraNode.pitchDelta = event.movementY * pointerYawRadians;
+    cameraNode.mouseYawDelta = event.movementX * pointerPitchRadians;
+    cameraNode.mousePitchDelta = event.movementY * pointerYawRadians;
 }
 
 function handlePointerLockChange(event) {
@@ -127,30 +129,30 @@ function handleKeys() {
 
     if (currentlyPressedKeys[74]) {
         //J
-        //cameraNode.yawDelta = -yawSpeedRadians;
+        cameraNode.yawDelta = -yawSpeedRadians;
     } else if (currentlyPressedKeys[76]) {
         //L
-        //cameraNode.yawDelta = yawSpeedRadians;
+        cameraNode.yawDelta = yawSpeedRadians;
     } else {
-        //cameraNode.yawDelta = 0;
+        cameraNode.yawDelta = 0;
     }
 
 
     if (currentlyPressedKeys[73]) {
         //I
-        //cameraNode.pitchDelta = -pitchSpeedRadians;
+        cameraNode.pitchDelta = -pitchSpeedRadians;
     } else if (currentlyPressedKeys[75]) {
         //K
-        //cameraNode.pitchDelta = pitchSpeedRadians;
+        cameraNode.pitchDelta = pitchSpeedRadians;
     } else {
-        //cameraNode.pitchDelta = 0;
+        cameraNode.pitchDelta = 0;
     }
 
 }
 
 cameraNode.animate = function(delta) {
-    cameraNode.yaw += delta * cameraNode.yawDelta;
-    cameraNode.pitch += delta * cameraNode.pitchDelta;
+    cameraNode.yaw += delta * cameraNode.yawDelta + delta * cameraNode.mouseYawDelta;
+    cameraNode.pitch += delta * cameraNode.pitchDelta + delta * cameraNode.mousePitchDelta;
 
     // clamp pitch value
     cameraNode.pitch = Math.min(Math.max(cameraNode.pitch, -89 * deg2rad), 89 * deg2rad);
