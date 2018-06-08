@@ -30,8 +30,6 @@ var normalMatrix = mat3.create();  // matrix, derived from modelview matrix, for
 var rotator;
 
 var cameraNode = new Node ("camera", new Transform({translate: [0, -3, -4], rotateDeg : 0, rotateAxis : [0,0,1]}), nullAnim, null);
-cameraNode.forwardV = vec3.fromValues(0, 0, 1);
-cameraNode.rightV = vec3.fromValues(1, 0, 0);
 cameraNode.yaw = 0;
 cameraNode.pitch = 0;
 cameraNode.yawDelta = 0;
@@ -157,13 +155,11 @@ cameraNode.animate = function(delta) {
     quat.rotateY(camQuat, camQuat, cameraNode.yaw);
 
     cameraNode.transform.rotate.quat = camQuat;
-    //cameraNode.transform.rotate.setRotationFromEuler(Math.cos(cameraNode.yaw) * cameraNode.pitch * rad2deg, cameraNode.yaw * rad2deg,  Math.sin(cameraNode.yaw) * cameraNode.pitch * rad2deg);
     cameraNode.transform.translate[0] += delta * cameraNode.forwardDelta * -Math.sin(cameraNode.yaw)
                                        + delta * cameraNode.rightDelta * -Math.sin(cameraNode.yaw + rightAngle);
     cameraNode.transform.translate[1] += delta * -cameraNode.upDelta;
     cameraNode.transform.translate[2] += delta * cameraNode.forwardDelta * Math.cos(cameraNode.yaw)
                                        + delta * cameraNode.rightDelta * Math.cos(cameraNode.yaw + rightAngle);
-    document.getElementById("debug-text").innerHTML = cameraNode.transform;
 
     cameraNode.mouseYawDelta = 0;
     cameraNode.mousePitchDelta = 0;
