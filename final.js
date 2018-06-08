@@ -40,8 +40,12 @@ cameraNode.forwardV = vec3.fromValues(0, 0, 1);
 cameraNode.rightV = vec3.fromValues(1, 0, 0);
 cameraNode.yaw = 0;
 cameraNode.pitch = 0;
+cameraNode.yawDelta = 0;
+cameraNode.pitchDelta = 0;
 
 var currentlyPressedKeys = {};
+
+var canvas;
 
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
@@ -50,6 +54,14 @@ function handleKeyDown(event) {
 
 function handleKeyUp(event) {
     currentlyPressedKeys[event.keyCode] = false;
+}
+
+function handleFocusLoss(event) {
+    currentlyPressedKeys = {};
+}
+
+function handleOnClick(event) {
+    canvas.requestPointerLock();
 }
 
 var deg2rad = Math.PI / 180;
@@ -61,6 +73,26 @@ var rightSpeed = 0.25;
 var upSpeed = 0.25;
 var yawSpeedRadians = 0.25;
 var pitchSpeedRadians = 0.25;
+var pointerYawRadians = 0.01;
+var pointerPitchRadians = 0.01;
+
+function handlePointer(event) {
+    cameraNode.yawDelta = event.movementX * pointerPitchRadians;
+    cameraNode.pitchDelta = event.movementY * pointerYawRadians;
+}
+
+function handlePointerLockChange(event) {
+    if (document.pointerLockElement === canvas ||
+        document.mozPointerLockElement === canvas) {
+        console.log('The pointer lock status is now locked');
+        document.addEventListener("mousemove", handlePointer, false);
+    } else {
+        console.log('The pointer lock status is now unlocked');  
+        document.removeEventListener("mousemove", handlePointer, false);
+        cameraNode.yawDelta = 0;
+        cameraNode.pitchDelta = 0;
+    }
+}
 
 function handleKeys() {
     if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
@@ -95,23 +127,23 @@ function handleKeys() {
 
     if (currentlyPressedKeys[74]) {
         //J
-        cameraNode.yawDelta = -yawSpeedRadians;
+        //cameraNode.yawDelta = -yawSpeedRadians;
     } else if (currentlyPressedKeys[76]) {
         //L
-        cameraNode.yawDelta = yawSpeedRadians;
+        //cameraNode.yawDelta = yawSpeedRadians;
     } else {
-        cameraNode.yawDelta = 0;
+        //cameraNode.yawDelta = 0;
     }
 
 
     if (currentlyPressedKeys[73]) {
         //I
-        cameraNode.pitchDelta = -pitchSpeedRadians;
+        //cameraNode.pitchDelta = -pitchSpeedRadians;
     } else if (currentlyPressedKeys[75]) {
         //K
-        cameraNode.pitchDelta = pitchSpeedRadians;
+        //cameraNode.pitchDelta = pitchSpeedRadians;
     } else {
-        cameraNode.pitchDelta = 0;
+        //cameraNode.pitchDelta = 0;
     }
 
 }
@@ -120,6 +152,8 @@ cameraNode.animate = function(delta) {
     cameraNode.yaw += delta * cameraNode.yawDelta;
     cameraNode.pitch += delta * cameraNode.pitchDelta;
 
+    // clamp pitch value
+    cameraNode.pitch = Math.min(Math.max(cameraNode.pitch, -89 * deg2rad), 89 * deg2rad);
     var camQuat = quat.create();
     quat.rotateX(camQuat, camQuat, cameraNode.pitch);
     quat.rotateY(camQuat, camQuat, cameraNode.yaw);
@@ -334,7 +368,7 @@ function animate(node, delta) {
 }
 
 function init() {
-    var canvas;
+    //var canvas;
     try {
         canvas = document.getElementById("myGLCanvas");
         gl = canvas.getContext("webgl") || 
@@ -360,6 +394,16 @@ function init() {
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
+    document.onblur = handleFocusLoss;
+    canvas.onclick = handleOnClick;
+
+    // request pointer lock
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+    // bind pointer lock handlers
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange, false);
+    document.addEventListener('mozpointerlockchange', handlePointerLockChange, false);
 
     document.getElementById("enableAnimate").checked = false;
     //rotator = new TrackballRotator(canvas, draw, 30);
