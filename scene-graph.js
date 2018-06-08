@@ -215,6 +215,30 @@ class Model extends Node {
         this.mesh = mesh;
         this.material = material;
     }
+
+    /**
+     * Binds this Model's mesh data to the given WebGL context.
+     * 
+     * @param {*} gl 
+     */
+    fillBuffers(gl) {
+        this.mesh.coordsBuffer = gl.createBuffer();
+        this.mesh.normalBuffer = gl.createBuffer();
+        this.mesh.indexBuffer = gl.createBuffer();
+        this.mesh.texcoordsBuffer = gl.createBuffer();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.coordsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.mesh.vertexPositions, gl.STATIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.mesh.vertexNormals, gl.STATIC_DRAW);
+    
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,this.mesh.indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indices, gl.STATIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.texcoordsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.mesh.vertexTextureCoords, gl.STATIC_DRAW);
+    }
 }
 
 class Tree extends Node {

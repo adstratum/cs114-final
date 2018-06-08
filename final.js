@@ -6,12 +6,6 @@ var a_coords_loc;       // Location of the a_coords attribute variable in the sh
 var a_normal_loc;       // Location of a_normal attribute.
 var a_texcoords_loc;
 
-var a_coords_buffer;    // Buffer for a_coords.
-var a_normal_buffer;    // Buffer for a_normal.
-var index_buffer;       // Buffer for indices.
-var a_texture_buffer;
-var a_texcoords_buffer;
-
 var texture0;
 var u_texture;
 var u_diffuseColor;     // Locations of uniform variables in the shader program
@@ -243,12 +237,6 @@ function initGL() {
     u_lightEnable = gl.getUniformLocation(prog, "enable");
     u_texture = gl.getUniformLocation(prog, "texture");
 
-    a_coords_buffer = gl.createBuffer();
-    a_normal_buffer = gl.createBuffer();
-    index_buffer = gl.createBuffer();
-    a_texture_buffer = gl.createBuffer();
-    a_texcoords_buffer = gl.createBuffer();
-
     gl.clearColor(0.0,0.0,0.0,1.0);
     gl.enable(gl.DEPTH_TEST);
 
@@ -259,21 +247,17 @@ function initGL() {
 }
 
 function installModel(modelData, texture) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, a_coords_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.coordsBuffer);
     gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_coords_loc);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, a_normal_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.normalBuffer);
     gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_normal_loc);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index_buffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelData.indexBuffer);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, a_texcoords_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexTextureCoords, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.texcoordsBuffer);
     gl.vertexAttribPointer(a_texcoords_loc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_texcoords_loc);
 
@@ -357,6 +341,15 @@ function getViewMatrix() {
     return out;
 }
 
+function bufferModels(node) {
+    if (node instanceof Model) {
+        node.fillBuffers(gl);
+    }
+    for (var child of node.nodeChildren) {
+        bufferModels(child);
+    }
+}
+
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -414,6 +407,8 @@ function init() {
 
     document.getElementById("enableAnimate").checked = false;
     //rotator = new TrackballRotator(canvas, draw, 30);
+
+    bufferModels(root);
 
     draw();
     requestAnimationFrame(tick);
