@@ -348,6 +348,8 @@ function bufferModels(node) {
 }
 
 function drawParticles(particlesets, viewMatrix) {
+    gl.disableVertexAttribArray(a_normal_loc);
+    gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
         gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
         gl.uniform1i(u_drawMode, DrawMode.FLAT);
@@ -356,7 +358,9 @@ function drawParticles(particlesets, viewMatrix) {
         gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_coords_loc);
 
-        gl.drawElements(gl.POINTS, node.vertexCount, gl.UNSIGNED_SHORT, 0);
+        
+
+        gl.drawArrays(gl.POINTS, 0, node.vertexCount);
     }
 }
 
