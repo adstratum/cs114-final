@@ -349,3 +349,23 @@ class Light extends Node {
         this.lightTarget = new Node(name + " target", new Transform({translate: [1, 0, 0]}), nullAnim, this);
     }
 }
+
+class ParticleSet extends Node {
+    constructor(name, material, transform, animate, nodeParent) {
+        super(name, transform, animate, nodeParent);
+        this.material = material;
+        this.vertexCount = 100;
+        this.vertexArray = new Float32Array(vertexCount*3);
+        for (var vert = 0; vert < this.vertexCount; ++vert) {
+            for (var c = 0; c < 3; ++c) {
+                this.vertexArray[vert + c] = 3 * Math.random();
+            }
+        }
+    }
+
+    fillBuffers(gl) {
+        this.mesh.coordsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.coordsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.mesh.vertexPositions, gl.STATIC_DRAW);
+    }
+}

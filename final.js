@@ -299,7 +299,11 @@ function rdraw(node, mv) {
     }
 }
 
-function loadLights(viewMatrix) {
+function drawParticles(particlesets, viewMatrix) {
+    //for 
+}
+
+function loadLights(viewMatrix, lights) {
     var dbgstr = "";
     var transformPos = [];
     var attenuation = [];
@@ -352,8 +356,9 @@ function draw() {
     var viewMatrix = getViewMatrix();
     loadLights(viewMatrix);
 
-    // root defined in modeldata.js
+    // root, particles defined in modeldata.js
     rdraw(root, viewMatrix);
+    drawParticles(particlesets, viewMatrix);
 }
 
 function animate(node, delta) {
