@@ -282,6 +282,7 @@ function drawModel(node, modelview) {
     gl.drawElements(gl.TRIANGLES, node.mesh.indices.length, gl.UNSIGNED_SHORT, 0);
 }
 
+
 function rdraw(node, mv) {
     var modelview = mat4.create();
     var scmodelview = mat4.create();
@@ -297,10 +298,6 @@ function rdraw(node, mv) {
         else
             rdraw(child, scmodelview);
     }
-}
-
-function drawParticles(particlesets, viewMatrix) {
-    //for 
 }
 
 function loadLights(viewMatrix, lights) {
@@ -350,11 +347,36 @@ function bufferModels(node) {
     }
 }
 
+function drawParticles(particlesets, viewMatrix) {
+    for (var node of particlesets) {
+        gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
+        gl.uniform1i(u_drawMode, DrawMode.FLAT);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, node.coordsBuffer);
+        gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_coords_loc);
+
+        gl.drawElements(gl.POINTS, node.vertexCount, gl.UNSIGNED_SHORT, 0);
+    }
+}
+
+function bufferParticles(particles) {
+    for (var node of particles) {
+        node.fillBuffers(gl);
+    }
+}
+
+function animateParticles(particles, delta) {
+    for (var node of particles) {
+        node.animate(gl, delta);
+    }
+}
+
 function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var viewMatrix = getViewMatrix();
-    loadLights(viewMatrix);
+    loadLights(viewMatrix, lights);
 
     // root, particles defined in modeldata.js
     rdraw(root, viewMatrix);
@@ -410,6 +432,7 @@ function init() {
     //rotator = new TrackballRotator(canvas, draw, 30);
 
     bufferModels(root);
+    bufferParticles(particlesets);
 
     draw();
     requestAnimationFrame(tick);
@@ -423,6 +446,8 @@ function tick(timestamp) {
     handleKeys();
     cameraNode.animate(delta / 100);
     draw();
-    if (document.getElementById("enableAnimate").checked)
+    if (document.getElementById("enableAnimate").checked) {
         animate(root, delta / 100);
+        animateParticles(particlesets, delta / 100);
+    }
 }

@@ -350,22 +350,50 @@ class Light extends Node {
     }
 }
 
+function rRng(scale) {
+    return ((scale * 2) * Math.random()) - scale;
+}
+
 class ParticleSet extends Node {
     constructor(name, material, transform, animate, nodeParent) {
         super(name, transform, animate, nodeParent);
         this.material = material;
         this.vertexCount = 100;
-        this.vertexArray = new Float32Array(vertexCount*3);
+        this.vertexArray = new Float32Array(this.vertexCount*3);
         for (var vert = 0; vert < this.vertexCount; ++vert) {
             for (var c = 0; c < 3; ++c) {
-                this.vertexArray[vert + c] = 3 * Math.random();
+                this.vertexArray[vert + c] = rRng(3);
             }
         }
     }
 
     fillBuffers(gl) {
-        this.mesh.coordsBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.coordsBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.mesh.vertexPositions, gl.STATIC_DRAW);
+        this.coordsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
+        this.updateBuffers(gl);
+    }
+
+    updateBuffers(gl) {
+        gl.bufferData(gl.ARRAY_BUFFER, this.vertexArray, gl.DYNAMIC_DRAW);
+    }
+
+    animate(gl, delta) {
+        for (var i = 0; i < this.vertexCount; ++i) {
+            var motion = vec3.fromValues(rRng(0.1), rRng(0.1), rRng(0.1));
+            vec3.scale(motion, motion, delta);
+            var position = this.getParticle(i);
+            vec3.add(position, position, motion);
+            this.setPosition(i, position);
+        }
+
+        this.updateBuffers(gl);
+    }
+
+    getParticle(i) {
+        return vec3.fromValues(this.vertexArray[3*i], this.vertexArray[3*i + 1], this.vertexArray[3*i + 2]);
+    }
+
+    setPosition(i, vec) {
+        this.vertexArray[3*i] = vec[0]; this.vertexArray[3*i + 1] = vec[1]; this.vertexArray[3*i + 2] = vec[2];
     }
 }
