@@ -445,13 +445,14 @@ function init() {
 var prev = performance.now();
 function tick(timestamp) {
     var delta = timestamp - prev;
+    delta = delta / 1000; //performance.now() gives time in milliseconds; convert to whole seconds
     prev = timestamp;
     requestAnimationFrame(tick);
     handleKeys();
-    cameraNode.animate(delta / 100);
+    cameraNode.animate(delta);
     draw();
     if (document.getElementById("enableAnimate").checked) {
-        animate(root, delta / 100);
-        animateParticles(particlesets, delta / 100);
+        animate(root, delta);
+        animateParticles(particlesets, delta);
     }
 }
