@@ -69,13 +69,13 @@ var deg2rad = Math.PI / 180;
 var rad2deg = 180 / Math.PI;
 var rightAngle = Math.PI / 2;
 
-var forwardSpeed = 0.25;
-var rightSpeed = 0.25;
-var upSpeed = 0.25;
-var yawSpeedRadians = 0.25;
-var pitchSpeedRadians = 0.25;
-var pointerYawRadians = 0.01;
-var pointerPitchRadians = 0.01;
+var forwardSpeed = 2.5;
+var rightSpeed = 2.5;
+var upSpeed = 2.5;
+var yawSpeedRadians = 2.5;
+var pitchSpeedRadians = 2.5;
+var pointerYawRadians = 0.1;
+var pointerPitchRadians = 0.1;
 
 function handlePointer(event) {
     cameraNode.mouseYawDelta = event.movementX * pointerPitchRadians;
