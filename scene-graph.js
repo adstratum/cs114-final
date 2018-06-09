@@ -360,20 +360,18 @@ class ParticleSet extends Node {
         this.material = material;
         this.vertexCount = 100;
         this.vertexArray = new Float32Array(this.vertexCount*3);
-        for (var vert = 0; vert < this.vertexCount; ++vert) {
-            for (var c = 0; c < 3; ++c) {
-                this.vertexArray[vert + c] = rRng(3);
-            }
+        for (var i = 0; i < this.vertexCount; ++i) {
+            this.setParticlePosition(i, [rRng(1), rRng(1), rRng(1)]);
         }
     }
 
     fillBuffers(gl) {
         this.coordsBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
         this.updateBuffers(gl);
     }
 
     updateBuffers(gl) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.vertexArray, gl.DYNAMIC_DRAW);
     }
 
@@ -381,19 +379,19 @@ class ParticleSet extends Node {
         for (var i = 0; i < this.vertexCount; ++i) {
             var motion = vec3.fromValues(rRng(0.1), rRng(0.1), rRng(0.1));
             vec3.scale(motion, motion, delta);
-            var position = this.getParticle(i);
+            var position = this.getParticlePosition(i);
             vec3.add(position, position, motion);
-            this.setPosition(i, position);
+            this.setParticlePosition(i, position);
         }
 
         this.updateBuffers(gl);
     }
 
-    getParticle(i) {
+    getParticlePosition(i) {
         return vec3.fromValues(this.vertexArray[3*i], this.vertexArray[3*i + 1], this.vertexArray[3*i + 2]);
     }
 
-    setPosition(i, vec) {
+    setParticlePosition(i, vec) {
         this.vertexArray[3*i] = vec[0]; this.vertexArray[3*i + 1] = vec[1]; this.vertexArray[3*i + 2] = vec[2];
     }
 }
