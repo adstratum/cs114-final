@@ -19,7 +19,7 @@ var lightpost = new Model("lightpost base", uvCylinder(), new Material(), new Tr
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseColor: [1, 1, 0, 1], drawMode:DrawMode.FLAT}), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
-var p1 = new ParticleSet("p1", new Material({diffuseColor: [1, 1, 1, 1]}), new Transform(), new Transform(), null);
+var p1 = new ParticleSet("p1", new Material({diffuseColor: [0.82, 0.93, 0.11, 1]}), new Transform(), new Transform(), null);
 p1.animate=function(gl,delta){
 for (var i = 0; i < this.vertexCount; ++i) {
             var motion = vec3.fromValues(rRng(0.1), rRng(0.1), rRng(0.1));
@@ -31,7 +31,7 @@ for (var i = 0; i < this.vertexCount; ++i) {
 
         this.updateBuffers(gl);
 };
-var p2 = new ParticleSet("p2", new Material({diffuseColor: [0.9, 0.2, 0.1, 1]}), new Transform(), new Transform(), null);
+var p2 = new ParticleSet("p2", new Material({diffuseColor: [0.2, 0.2, 0.9, 1]}), new Transform(), new Transform(), null);
 p2.animate=function(gl,delta){
 for (var i = 0; i < this.vertexCount; ++i) {
 	if(this.counter>1000)
@@ -55,5 +55,37 @@ for (var i = 0; i < this.vertexCount; ++i) {
 
         this.updateBuffers(gl);
 };
+var p3 = new ParticleSet("p3", new Material({diffuseColor: [1, 1, 1, 1]}), new Transform(), new Transform(), null);
+p3.animate=function(gl,delta){
+for (var i = 0; i < this.vertexCount; ++i) {
+    if(this.counter>1000)
+    {
+        //var motion = vec3.fromValues(0,0,2);
+        //    vec3.scale(motion, motion, delta);
+            var position = this.getParticle(i);
+            this.setPosition(i, [rRng(1),rRng(1),2]);
+    }
+    else if(this.counter>500 && this.counter<1000){
+
+            var motion = vec3.fromValues(rRng(1),0,-0.091);
+            vec3.scale(motion, motion, delta);
+            var position = this.getParticle(i);
+            vec3.add(position, position, motion);
+            this.setPosition(i, position);
+            this.counter++;
+        }
+        else if(this.counter<500){
+
+            var motion = vec3.fromValues(0,0,0.091);
+            vec3.scale(motion, motion, delta);
+            var position = this.getParticle(i);
+            vec3.add(position, position, motion);
+            this.setPosition(i, position);
+            this.counter++;
+        }
+        }
+
+        this.updateBuffers(gl);
+};
 lights = [lightbulb];
-particlesets = [p1,p2];
+particlesets = [p1,p2,p3];
