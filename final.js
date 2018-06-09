@@ -348,8 +348,6 @@ function bufferModels(node) {
 }
 
 function drawParticles(particlesets, viewMatrix) {
-    gl.disableVertexAttribArray(a_normal_loc);
-    gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
         gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
         gl.uniform1i(u_drawMode, DrawMode.FLAT);
@@ -358,9 +356,10 @@ function drawParticles(particlesets, viewMatrix) {
         gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_coords_loc);
 
-        
+        gl.disableVertexAttribArray(a_normal_loc);
+        gl.disableVertexAttribArray(a_texcoords_loc);
 
-        gl.drawArrays(gl.POINTS, 0, node.vertexCount);
+        gl.drawArrays(gl.POINTS,0,node.vertexCount);
     }
 }
 
@@ -445,14 +444,13 @@ function init() {
 var prev = performance.now();
 function tick(timestamp) {
     var delta = timestamp - prev;
-    delta = delta / 1000; //performance.now() gives time in milliseconds; convert to whole seconds
     prev = timestamp;
     requestAnimationFrame(tick);
     handleKeys();
-    cameraNode.animate(delta);
+    cameraNode.animate(delta / 100);
     draw();
     if (document.getElementById("enableAnimate").checked) {
-        animate(root, delta);
-        animateParticles(particlesets, delta);
+        animate(root, delta / 100);
+        animateParticles(particlesets, delta / 100);
     }
 }
