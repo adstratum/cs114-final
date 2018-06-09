@@ -41,8 +41,13 @@ var currentlyPressedKeys = {};
 
 var canvas;
 
+var suppressDefaultEventHandlers = false;
+
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
+    if (suppressDefaultEventHandlers) {
+        event.preventDefault();
+    }
 }
 
 
@@ -82,9 +87,11 @@ function handlePointerLockChange(event) {
         document.mozPointerLockElement === canvas) {
         console.log('The pointer lock status is now locked');
         document.addEventListener("mousemove", handlePointer, false);
+        suppressDefaultEventHandlers = true;
     } else {
         console.log('The pointer lock status is now unlocked');  
         document.removeEventListener("mousemove", handlePointer, false);
+        suppressDefaultEventHandlers = false;
         cameraNode.yawDelta = 0;
         cameraNode.pitchDelta = 0;
     }
