@@ -424,7 +424,7 @@ function init() {
             "<p>Sorry, could not initialize the WebGL graphics context:" + e + "</p>";
         return;
     }
-    projection = mat4.perspective(projection, Math.PI / 2,canvas.width / canvas.height,1,50);
+    projection = mat4.perspective(projection, Math.PI / 2,canvas.width / canvas.height,0.1,50);
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
