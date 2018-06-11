@@ -34,7 +34,7 @@
                 v_normal = a_normal;
                 v_coords = eyeSpaceCoords.xyz;
                 v_texcoord = a_texcoords;
-                gl_PointSize = 30.0;
+                gl_PointSize = 50.0 / length(eyeSpaceCoords);
             }
         </script>
         <script type="x-shader/x-fragment" id="fshader-source">
