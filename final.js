@@ -359,13 +359,17 @@ function drawParticles(particlesets, viewMatrix) {
     gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
         gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
-        gl.uniform1i(u_drawMode, DrawMode.FLAT);
+        gl.uniform1i(u_drawMode, node.material.drawMode);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, node.coordsBuffer);
         gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_coords_loc);
 
-        
+        if (node.material.drawMode == DrawMode.POINT_TEXTURED && node.material.texture != null) {
+            gl.bindTexture(gl.TEXTURE_2D, texture0);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, node.material.texture);
+            gl.generateMipmap(gl.TEXTURE_2D);
+        }
 
         gl.drawArrays(gl.POINTS, 0, node.vertexCount);
     }

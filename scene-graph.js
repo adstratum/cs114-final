@@ -1,3 +1,5 @@
+DrawMode = {FLAT:1, PHONG:2, UVS:3, TEXTURED_FLAT:4, TEXTURED_PHONG:5, POINT_TEXTURED:6}
+
 class Rotation {
     /**
      * Represents a rotation in axis-angle form.
@@ -86,8 +88,6 @@ class Transform {
         return "tr: " + this.translate + " rot: " + this.rotate + " scl: " + this.scale;
     }
 }
-
-DrawMode = {FLAT:1, PHONG:2, UVS:3, TEXTURED_FLAT:4, TEXTURED_PHONG:5}
 
 class Material {
     
@@ -357,6 +357,9 @@ class ParticleSet extends Node {
     constructor(name, material, transform, animate, nodeParent) {
         super(name, transform, animate, nodeParent);
         this.material = material;
+        if (!(material.drawMode == DrawMode.FLAT || material.drawMode == DrawMode.POINT_TEXTURED) ) {
+            this.material.drawMode = DrawMode.FLAT;
+        }
         this.vertexCount = 100;
         this.vertexArray = new Float32Array(this.vertexCount*3);
         for (var i = 0; i < this.vertexCount; ++i) {
