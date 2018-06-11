@@ -362,8 +362,9 @@ class ParticleSet extends Node {
         }
         this.vertexCount = 100;
         this.vertexArray = new Float32Array(this.vertexCount*3);
-        for (var i = 0; i < this.vertexCount; ++i) {
-            this.setParticlePosition(i, [rRng(1), rRng(1), rRng(1)]);
+        this.counter=0;
+        for (var vert = 0; vert < this.vertexCount; ++vert) {
+            this.setPosition(vert, [rRng(3), rRng(3), rRng(3)]);
         }
     }
 
@@ -381,19 +382,19 @@ class ParticleSet extends Node {
         for (var i = 0; i < this.vertexCount; ++i) {
             var motion = vec3.fromValues(rRng(0.1), rRng(0.1), rRng(0.1));
             vec3.scale(motion, motion, delta);
-            var position = this.getParticlePosition(i);
+            var position = this.getPosition(i);
             vec3.add(position, position, motion);
-            this.setParticlePosition(i, position);
+            this.setPosition(i, position);
         }
 
         this.updateBuffers(gl);
     }
 
-    getParticlePosition(i) {
+    getPosition(i) {
         return vec3.fromValues(this.vertexArray[3*i], this.vertexArray[3*i + 1], this.vertexArray[3*i + 2]);
     }
 
-    setParticlePosition(i, vec) {
+    setPosition(i, vec) {
         this.vertexArray[3*i] = vec[0]; this.vertexArray[3*i + 1] = vec[1]; this.vertexArray[3*i + 2] = vec[2];
     }
 }

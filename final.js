@@ -376,7 +376,7 @@ function drawParticles(particlesets, viewMatrix) {
             gl.generateMipmap(gl.TEXTURE_2D);
         }
 
-        gl.drawArrays(gl.POINTS, 0, node.vertexCount);
+        gl.drawArrays(gl.POINTS,0,node.vertexCount);
     }
 }
 
@@ -461,8 +461,8 @@ function init() {
 var prev = performance.now();
 function tick(timestamp) {
     var delta = timestamp - prev;
-    delta = delta / 1000; //performance.now() gives time in milliseconds; convert to whole seconds
     prev = timestamp;
+    delta = delta / 1000;
     requestAnimationFrame(tick);
     handleKeys();
     cameraNode.animate(delta);
