@@ -358,12 +358,17 @@ function drawParticles(particlesets, viewMatrix) {
     gl.disableVertexAttribArray(a_normal_loc);
     gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
+        var modelview = mat4.create();
+        mat4.multiply(modelview, viewMatrix, node.getLocalTransform());
         gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
         gl.uniform1i(u_drawMode, node.material.drawMode);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, node.coordsBuffer);
         gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_coords_loc);
+
+        gl.uniformMatrix4fv(u_modelview, false, modelview);
+        gl.uniformMatrix4fv(u_projection, false, projection);
 
         if (node.material.drawMode == DrawMode.POINT_TEXTURED && node.material.texture != null) {
             gl.bindTexture(gl.TEXTURE_2D, texture0);
