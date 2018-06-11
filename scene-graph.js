@@ -33,7 +33,6 @@ class Transform {
      * @param {vec3} scale, default = [1, 1, 1];
      */
     constructor(kargs) {
-        console.log(kargs);
         this.translate = vec3.fromValues(0, 0, 0);
         this.rotate = new Rotation(0, vec3.fromValues(0, 0, 0));
         this.scale = vec3.fromValues(1, 1, 1);
