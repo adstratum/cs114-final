@@ -74,7 +74,7 @@ p3.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 
-var p4 = new ParticleSet("p4", new Material({ diffuseColor: [1, 1, 1, 1] }), new Transform(), new Transform(), null);
+var p4 = new ParticleSet("p4", new Material({ diffuseColor: [1, 1, 1, 1], drawMode:DrawMode.POINT_TEXTURED, texture: "alpha.png"}), new Transform(), new Transform(), null);
 p4.animate = function (gl, delta) {
     var origx;
     var origy;

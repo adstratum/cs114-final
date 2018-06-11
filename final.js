@@ -393,13 +393,21 @@ function animateParticles(particles, delta) {
 }
 
 function draw() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     var viewMatrix = getViewMatrix();
     loadLights(viewMatrix, lights);
 
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.disable(gl.BLEND);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthMask(true);
+
     // root, particles defined in modeldata.js
     rdraw(root, viewMatrix);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    
     drawParticles(particlesets, viewMatrix);
 }
 
