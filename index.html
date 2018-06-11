@@ -50,6 +50,7 @@
             const int DRAW_UVS = 3;
             const int DRAW_TEXTURED_FLAT = 4;
             const int DRAW_TEXTURED_PHONG = 5;
+            const int DRAW_POINT_TEXTURED = 6;
 
             varying vec3 v_coords;
             varying vec3 v_normal;
@@ -110,6 +111,7 @@
             }
 
             void main() {
+                // no switch statement in WebGL, have to do this the hard way
                 if (drawMode == DRAW_FLAT) {
                     gl_FragColor = diffuseColor.rgba;
                 } else if (drawMode == DRAW_PHONG || drawMode == DRAW_TEXTURED_PHONG) {
@@ -130,6 +132,8 @@
                     gl_FragColor = vec4(v_texcoord, 0.0, 1.0);
                 } else if (drawMode == DRAW_TEXTURED_FLAT) {
                     gl_FragColor = texture2D(texture, v_texcoord);
+                } else if (drawMode == DRAW_POINT_TEXTURED) {
+                    gl_FragColor = texture2D(texture, gl_PointCoord);
                 }
             }
         </script>
@@ -148,10 +152,12 @@
             <br>
             <label>Animate:<input type="checkbox" id="enableAnimate"</label>
         </p>
-        <div id="canvas-holder">
+        <div id="canvas-holder" style="text-align:center">
             <canvas width=1270 height=720 id="myGLCanvas" style="background-color:red"></canvas>
+            <div style="padding: 50px 0;">
+                <textarea id="debug-text", style="width: 800px; height: 100px; font-family:monospace" class="debug"></textarea>
+            </div>
         </div>
-        <textarea id="debug-text", style="width: 800px; height: 100px; text-align:left; font-family:monospace" class="debug">
         </textarea>
     </body>
 </html>

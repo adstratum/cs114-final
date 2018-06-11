@@ -19,6 +19,6 @@ var lightpost = new Model("lightpost base", uvCylinder(), new Material(), new Tr
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseColor: [1, 1, 0, 1], drawMode:DrawMode.FLAT}), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
-var p1 = new ParticleSet("p1", new Material({diffuseColor: [1, 1, 1, 1]}), new Transform(), new Transform(), null);
+var p1 = new ParticleSet("p1", new Material({diffuseColor: [1, 1, 1, 1], drawMode: DrawMode.POINT_TEXTURED, texture:"grass.png"}), new Transform(), new Transform(), null);
 lights = [lightbulb];
 particlesets = [p1];
