@@ -355,8 +355,6 @@ function bufferModels(node) {
 }
 
 function drawParticles(particlesets, viewMatrix) {
-    gl.disableVertexAttribArray(a_normal_loc);
-    gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
         var modelview = mat4.create();
         mat4.multiply(modelview, viewMatrix, node.getLocalTransform());
