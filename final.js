@@ -69,9 +69,9 @@ var deg2rad = Math.PI / 180;
 var rad2deg = 180 / Math.PI;
 var rightAngle = Math.PI / 2;
 
-var forwardSpeed = 2.5;
-var rightSpeed = 2.5;
-var upSpeed = 2.5;
+var forwardSpeed = 8;
+var rightSpeed = 8;
+var upSpeed = 8;
 var yawSpeedRadians = 2.5;
 var pitchSpeedRadians = 2.5;
 var pointerYawRadians = 0.1;
