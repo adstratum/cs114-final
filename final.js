@@ -355,8 +355,6 @@ function bufferModels(node) {
 }
 
 function drawParticles(particlesets, viewMatrix) {
-    gl.disableVertexAttribArray(a_normal_loc);
-    gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
         var modelview = mat4.create();
         mat4.multiply(modelview, viewMatrix, node.getLocalTransform());
@@ -473,10 +471,10 @@ function tick(timestamp) {
     delta = delta / 1000;
     requestAnimationFrame(tick);
     handleKeys();
-    cameraNode.animate(delta);
+    cameraNode.animate(delta / 100);
     draw();
     if (document.getElementById("enableAnimate").checked) {
-        animate(root, delta);
-        animateParticles(particlesets, delta);
+        animate(root, delta / 100);
+        animateParticles(particlesets, delta / 100);
     }
 }
