@@ -50,6 +50,7 @@ var p1 = new ParticleSet("p1", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1
 for(var i=0;i<p1.vertexCount;++i)
 {
     p1.setProperties(i,{velocity:[rRng(2),rRng(1)+10,rRng(2)],acceleration:[0,-9.8,0]});
+    p1.setPosition(i, [0, -1, 0]);
 }
 p1.animate = function (gl, delta) {
     for (var i = 0; i < this.vertexCount; ++i) {
@@ -58,28 +59,18 @@ p1.animate = function (gl, delta) {
         if(position[1]<-1)
         {
             this.setPosition(i,[0,1,0]);
-            p1.setProperties(i,{velocity:[rRng(4),rRng(1)+10,rRng(4)],acceleration:[0,-9.8,0]});
-        }
-        else if(position[1]>5)
-        {
-            var accel=vec3.clone(props['acceleration']);
-            var velo=vec3.clone(props['velocity']);
-            vec3.scale(accel,accel,delta);
-            vec3.add(velo,velo,accel);
-            vec3.scale(velo,velo,delta);
-            vec3.add(position,position,velo);
-            this.setPosition(i,position);
-            p1.setProperties(i,{velocity:[rRng(1),-1,rRng(1)],acceleration:[0,-9.8,0]});
+            p1.setProperties(i,{velocity:[rRng(4),rRng(1)+30,rRng(4)],acceleration:[0,-9.8,0]});
         }
         else
         {
             var accel=vec3.clone(props['acceleration']);
             var velo=vec3.clone(props['velocity']);
-            vec3.scale(accel,accel,delta);
+            var veldelta = vec3.create();
             vec3.add(velo,velo,accel);
-            vec3.scale(velo,velo,delta);
-            vec3.add(position,position,velo);
+            vec3.scale(veldelta,velo,delta);
+            vec3.add(position,position,veldelta);
             this.setPosition(i,position);
+            p1.setProperties(i,{velocity:velo,acceleration:[0, -1, 0]});
         }
     }
 
