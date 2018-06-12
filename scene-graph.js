@@ -360,7 +360,7 @@ class ParticleSet extends Node {
         if (!(material.drawMode == DrawMode.FLAT || material.drawMode == DrawMode.POINT_TEXTURED) ) {
             this.material.drawMode = DrawMode.FLAT;
         }
-        this.vertexCount = 500;
+        this.vertexCount = 100;
         this.vertexArray = new Float32Array(this.vertexCount*3);
         this.vertexProperties = {};
         this.counter=0;
