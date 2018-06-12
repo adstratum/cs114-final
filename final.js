@@ -358,6 +358,8 @@ function drawParticles(particlesets, viewMatrix) {
     gl.disableVertexAttribArray(a_normal_loc);
     gl.disableVertexAttribArray(a_texcoords_loc);
     for (var node of particlesets) {
+        var modelview = mat4.create();
+        mat4.multiply(modelview, viewMatrix, node.getLocalTransform());
         gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
         gl.uniform1i(u_drawMode, node.material.drawMode);
 
@@ -365,13 +367,16 @@ function drawParticles(particlesets, viewMatrix) {
         gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_coords_loc);
 
+        gl.uniformMatrix4fv(u_modelview, false, modelview);
+        gl.uniformMatrix4fv(u_projection, false, projection);
+
         if (node.material.drawMode == DrawMode.POINT_TEXTURED && node.material.texture != null) {
             gl.bindTexture(gl.TEXTURE_2D, texture0);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, node.material.texture);
             gl.generateMipmap(gl.TEXTURE_2D);
         }
 
-        gl.drawArrays(gl.POINTS, 0, node.vertexCount);
+        gl.drawArrays(gl.POINTS,0,node.vertexCount);
     }
 }
 
@@ -388,13 +393,21 @@ function animateParticles(particles, delta) {
 }
 
 function draw() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     var viewMatrix = getViewMatrix();
     loadLights(viewMatrix, lights);
 
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.disable(gl.BLEND);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthMask(true);
+
     // root, particles defined in modeldata.js
     rdraw(root, viewMatrix);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.depthMask(false);
+    
     drawParticles(particlesets, viewMatrix);
 }
 
@@ -456,8 +469,8 @@ function init() {
 var prev = performance.now();
 function tick(timestamp) {
     var delta = timestamp - prev;
-    delta = delta / 1000; //performance.now() gives time in milliseconds; convert to whole seconds
     prev = timestamp;
+    delta = delta / 1000;
     requestAnimationFrame(tick);
     handleKeys();
     cameraNode.animate(delta);
