@@ -34,7 +34,7 @@ for (var i = 0; i < this.vertexCount; ++i) {
 var p2 = new ParticleSet("p2", new Material({diffuseColor: [0.2, 0.2, 0.9, 1]}), new Transform(), new Transform(), null);
 p2.animate=function(gl,delta){
 for (var i = 0; i < this.vertexCount; ++i) {
-	if(this.counter>1000)
+	if(this.counter>100)
 	{
             var position = this.getParticle(i);
             this.setPosition(i, [position[0],position[1],2]);
@@ -56,7 +56,7 @@ for (var i = 0; i < this.vertexCount; ++i) {
 var p3 = new ParticleSet("p3", new Material({diffuseColor: [1, 1, 1, 1]}), new Transform(), new Transform(), null);
 p3.animate=function(gl,delta){
 for (var i = 0; i < this.vertexCount; ++i) {
-    if(this.counter>1000)
+    if(this.counter>100)
     {
             var position = this.getParticle(i);
             this.setPosition(i, [position[0],position[1],2]);
@@ -76,7 +76,7 @@ for (var i = 0; i < this.vertexCount; ++i) {
         this.updateBuffers(gl);
 };
 
-var p4 = new ParticleSet("p4", new Material({diffuseColor: [1, 1, 1, 1]}), new Transform(), new Transform(), null);
+var p4 = new ParticleSet("p4", new Material({diffuseColor: [1, 0, 1, 1]}), new Transform(), new Transform(), null);
 p4.animate=function(gl,delta){
     var origx;
     var origy;
