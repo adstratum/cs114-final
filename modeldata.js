@@ -46,7 +46,7 @@ var lightpost = new Model("lightpost base", uvCylinder(), new Material(), new Tr
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseColor: [1, 1, 0, 1], drawMode:DrawMode.FLAT}), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
-var p1 = new ParticleSet("sparks", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1] }), new Transform(), new Transform(), null);
+var p1 = new ParticleSet("sparks", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1] }), new Transform({translate:[30,0,0]}), new Transform(), null);
 for(var i=0;i<p1.vertexCount;++i)
 {
     p1.setProperties(i,{velocity:[rRng(2),rRng(1)+10,rRng(2)],acceleration:[0,-9.8,0]});
@@ -76,7 +76,7 @@ p1.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] , drawMode:DrawMode.POINT_TEXTURED, texture:"raindrop.png"}), new Transform(), new Transform(), null);
+var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] , drawMode:DrawMode.POINT_TEXTURED, texture:"raindrop.png"}), new Transform({translate:[-30,0,0]}), new Transform(), null);
 for(var i=0;i<p2.vertexCount;++i)
 {
     p2.setProperties(i,{velocity:[0,-1,0],acceleration:[0,-9.8,0]});
@@ -121,7 +121,7 @@ p2.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p3 = new ParticleSet("snow", new Material({ diffuseColor: [1, 1, 1, 1] }), new Transform(), new Transform(), null);
+var p3 = new ParticleSet("snow", new Material({ diffuseColor: [1, 1, 1, 1], drawMode:DrawMode.POINT_TEXTURED, texture:"Snowflake.png"}), new Transform({translate:[0,0,30],scale:[5,5,5]}), new Transform(), null);
 for(var i=0;i<p3.vertexCount;++i)
 {
     p3.setProperties(i,{velocity:[rRng(1),-1,0],acceleration:[0,-9.8,0]});
@@ -151,29 +151,39 @@ p3.animate = function (gl, delta) {
 };
 
 var p4 = new ParticleSet("sharknado", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform(), new Transform(), null);
-for(var i=0;i<p2.vertexCount;++i)
+for(var i=0;i<p4.vertexCount;++i)
+
 {
     p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
 }
 p4.animate = function (gl, delta) {
-    var position = this.getPosition(i);
+    for (var i = 0; i < this.vertexCount; ++i) {
+        var position = this.getPosition(i);
         var props=this.getProperties(i);
-        if(position[1]<-3)
-        {
-              p4.setProperties(i,{velocity:[1,0,0],acceleration:[0,-9.8,0]});
-        }
-        else
-        {
-            p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
-        }
         var accel=vec3.clone(props['acceleration']);
             var velo=vec3.clone(props['velocity']);
             vec3.scale(accel,accel,delta);
             vec3.add(velo,velo,accel);
             vec3.scale(velo,velo,delta);
             vec3.add(position,position,velo);
+            //vec3.rotateY(velo,velo,0.01*delta);
             this.setPosition(i,position);
+            var temp = 0;
+            if(temp == 0)
+            {
+                p4.setProperties(i,{velocity:[Math.sin(position[0]),0,0],acceleration:[0,0,0]});
+                if(velo[0] == 0)
+                    temp = 1;
+            }
+            if(temp == 1)
+            {
+                p4.setProperties(i,{velocity:[-Math.sin(position[0]),0,0],acceleration:[0,0,0]});
+                if(velo[0] == 0)
+                    temp = 0;
+            }
+    }
+        
     this.updateBuffers(gl);
 };
 lights = [lightbulb];
-particlesets = [p1,p2,p3];
+particlesets = [p1,p2,p3,p4];
