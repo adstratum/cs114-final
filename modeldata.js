@@ -47,13 +47,40 @@ var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseCo
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
 var p1 = new ParticleSet("p1", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1] }), new Transform(), new Transform(), null);
+for(var i=0;i<p1.vertexCount;++i)
+{
+    p1.setProperties(i,{velocity:[rRng(2),rRng(1)+10,rRng(2)],acceleration:[0,-9.8,0]});
+}
 p1.animate = function (gl, delta) {
     for (var i = 0; i < this.vertexCount; ++i) {
-        var motion = vec3.fromValues(rRng(0.1), rRng(0.1), rRng(0.1));
-        vec3.scale(motion, motion, delta);
         var position = this.getPosition(i);
-        vec3.add(position, position, motion);
-        this.setPosition(i, position);
+        var props=this.getProperties(i);
+        if(position[1]<-1)
+        {
+            this.setPosition(i,[0,1,0]);
+            p1.setProperties(i,{velocity:[rRng(4),rRng(1)+10,rRng(4)],acceleration:[0,-9.8,0]});
+        }
+        else if(position[1]>5)
+        {
+            var accel=vec3.clone(props['acceleration']);
+            var velo=vec3.clone(props['velocity']);
+            vec3.scale(accel,accel,delta);
+            vec3.add(velo,velo,accel);
+            vec3.scale(velo,velo,delta);
+            vec3.add(position,position,velo);
+            this.setPosition(i,position);
+            p1.setProperties(i,{velocity:[rRng(1),-1,rRng(1)],acceleration:[0,-9.8,0]});
+        }
+        else
+        {
+            var accel=vec3.clone(props['acceleration']);
+            var velo=vec3.clone(props['velocity']);
+            vec3.scale(accel,accel,delta);
+            vec3.add(velo,velo,accel);
+            vec3.scale(velo,velo,delta);
+            vec3.add(position,position,velo);
+            this.setPosition(i,position);
+        }
     }
 
     this.updateBuffers(gl);
@@ -102,21 +129,28 @@ p2.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 var p3 = new ParticleSet("p3", new Material({ diffuseColor: [1, 1, 1, 1] }), new Transform(), new Transform(), null);
+for(var i=0;i<p3.vertexCount;++i)
+{
+    p3.setProperties(i,{velocity:[rRng(1),-1,0],acceleration:[0,-9.8,0]});
+}
 p3.animate = function (gl, delta) {
-    for (var i = 0; i < this.vertexCount; ++i) {
-        if (this.counter > 100) {
-            var position = this.getPosition(i);
-            this.setPosition(i, [position[0], position[1], 2]);
-            this.counter = 0;
+     for (var i = 0; i < this.vertexCount; ++i) {
+        var position = this.getPosition(i);
+        var props=this.getProperties(i);
+        if(position[1]<-3)
+        {
+            this.setPosition(i,[position[0],5,position[2]]);
         }
-        else {
-            var motion = vec3.fromValues(rRng(0.1), 0, -0.091);
-            vec3.scale(motion, motion, delta);
-            var position = this.getPosition(i);
-            vec3.add(position, position, motion);
-            this.setPosition(i, position);
-            this.counter++;
-
+        else
+        {
+            var accel=vec3.clone(props['acceleration']);
+            var velo=vec3.clone(props['velocity']);
+            vec3.scale(accel,accel,delta);
+            vec3.add(velo,velo,accel);
+            vec3.scale(velo,velo,delta);
+            vec3.add(position,position,velo);
+            this.setPosition(i,position);
+             p3.setProperties(i,{velocity:[rRng(1),-1,0],acceleration:[0,-9.8,0]});
         }
     }
 
@@ -124,47 +158,29 @@ p3.animate = function (gl, delta) {
 };
 
 var p4 = new ParticleSet("p4", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform(), new Transform(), null);
+for(var i=0;i<p2.vertexCount;++i)
+{
+    p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
+}
 p4.animate = function (gl, delta) {
-    var origx;
-    var origy;
-    var origz;
-    for (var i = 0; i < this.vertexCount; ++i) {
-        var position = this.getPosition(i);
-        if (this.counter <= 250) {
-            var motion = vec3.fromValues(0, 1, 0);
-            vec3.scale(motion, motion, delta);
-            vec3.add(position, position, motion);
-            this.setPosition(i, position);
-
+    var position = this.getPosition(i);
+        var props=this.getProperties(i);
+        if(position[1]<-3)
+        {
+              p4.setProperties(i,{velocity:[1,0,0],acceleration:[0,-9.8,0]});
         }
-        else if (this.counter > 250 && this.counter <= 500) {
-            var motion = vec3.fromValues(1, 0, -0);
-            vec3.scale(motion, motion, delta);
-            vec3.add(position, position, motion);
-            this.setPosition(i, position);
-
+        else
+        {
+            p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
         }
-        else if (this.counter > 500 && this.counter <= 750) {
-            var motion = vec3.fromValues(0, -1, 0);
-            vec3.scale(motion, motion, delta);
-            vec3.add(position, position, motion);
-            this.setPosition(i, position);
-
-        }
-        else if (this.counter > 750 && this.counter <= 1000) {
-            var motion = vec3.fromValues(-1, 0, 0);
-            vec3.scale(motion, motion, delta);
-            vec3.add(position, position, motion);
-            this.setPosition(i, position);
-
-        }
-        else {
-            this.counter = 0;
-        }
-        this.counter++;
-    }
-
+        var accel=vec3.clone(props['acceleration']);
+            var velo=vec3.clone(props['velocity']);
+            vec3.scale(accel,accel,delta);
+            vec3.add(velo,velo,accel);
+            vec3.scale(velo,velo,delta);
+            vec3.add(position,position,velo);
+            this.setPosition(i,position);
     this.updateBuffers(gl);
 };
 lights = [lightbulb];
-particlesets = [p2];
+particlesets = [p1,p2,p3];
