@@ -83,44 +83,38 @@ p4.animate=function(gl,delta){
     var origz;
 for (var i = 0; i < this.vertexCount; ++i) {
     var position = this.getParticle(i);
-    if(this.counter<200){
-            var motion = vec3.fromValues(1,1,1);
+    if(this.counter<=250){
+            var motion = vec3.fromValues(0,1,0);
             vec3.scale(motion, motion, delta);
             vec3.add(position, position, motion);
             this.setPosition(i, position);
-            this.counter++;
         
         }
-          else if(this.counter>200 && this.counter<400){
-            var motion = vec3.fromValues(-1,1,1);
+    else if(this.counter>250 && this.counter<=500){
+            var motion = vec3.fromValues(1,0,-0);
             vec3.scale(motion, motion, delta);
             vec3.add(position, position, motion);
             this.setPosition(i, position);
-            this.counter++;
         
         }
-          else if(this.counter>400 && this.counter<600){
-            var motion = vec3.fromValues(-1,-1,1);
+        else if(this.counter>500 && this.counter<=750){
+            var motion = vec3.fromValues(0,-1,0);
             vec3.scale(motion, motion, delta);
             vec3.add(position, position, motion);
             this.setPosition(i, position);
-            this.counter++;
         
         }
-
-          else if(this.counter>600 && this.counter<800){
-            var motion = vec3.fromValues(1,-1,1);
+        else if(this.counter>750 && this.counter<=1000){
+            var motion = vec3.fromValues(-1,0,0);
             vec3.scale(motion, motion, delta);
             vec3.add(position, position, motion);
             this.setPosition(i, position);
-            this.counter++;
         
         }
-            else
-    {
-            this.setPosition(i, [0,0,0]);
+        else{
             this.counter=0;
-    }
+        }
+        this.counter++;
         }
 
         this.updateBuffers(gl);
