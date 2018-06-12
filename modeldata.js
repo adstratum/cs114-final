@@ -32,8 +32,29 @@ p1.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 var p2 = new ParticleSet("p2", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] }), new Transform(), new Transform(), null);
+for(var i=0;i<p2.vertexCount;++i)
+{
+    p2.setProperties(i,{velocity:[0,-1,0],acceleration:[0,-9.8,0]});
+}
 p2.animate = function (gl, delta) {
     for (var i = 0; i < this.vertexCount; ++i) {
+        var position = this.getPosition(i);
+        var props=this.getProperties(i);
+        if(position[1]<-3)
+        {
+            this.setPosition(i,[position[0],5,position[2]]);
+        }
+        else
+        {
+            var accel=vec3.clone(props['acceleration']);
+            var velo=vec3.clone(props['velocity']);
+            vec3.scale(accel,accel,delta);
+            vec3.add(velo,velo,accel);
+            vec3.scale(velo,velo,delta);
+            vec3.add(position,position,velo);
+            this.setPosition(i,position);
+        }
+        /*
         if (this.counter > 100) {
             var position = this.getPosition(i);
             this.setPosition(i, [position[0], position[1], 2]);
@@ -48,6 +69,7 @@ p2.animate = function (gl, delta) {
             this.setPosition(i, position);
             this.counter++;
         }
+        */
     }
 
     this.updateBuffers(gl);
@@ -118,4 +140,4 @@ p4.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 lights = [lightbulb];
-particlesets = [p1, p2, p3, p4];
+particlesets = [p2];

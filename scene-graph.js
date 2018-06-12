@@ -404,6 +404,6 @@ class ParticleSet extends Node {
     }
 
     setProperties(i, dict) {
-        this.vertexProperties = dict;
+        this.vertexProperties[i] = dict;
     }
 }
