@@ -46,7 +46,7 @@ var lightpost = new Model("lightpost base", uvCylinder(), new Material(), new Tr
 var lightmodel = new Model("lightpost bulb", uvSphere(), new Material({diffuseColor: [1, 1, 0, 1], drawMode:DrawMode.FLAT}), new Transform({translate: [0, 0, 1], scale: [0.7, 0.7, 0.7]}), nullAnim, lightpost);
 var lightbulb = new Light("lightpost emitter", new Transform({translate: [0, 0, 1]}), nullAnim, lightmodel, {type: "point", atten: 1000});
 
-var p1 = new ParticleSet("p1", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1] }), new Transform(), new Transform(), null);
+var p1 = new ParticleSet("sparks", new Material({ diffuseColor: [0.82, 0.93, 0.11, 1] }), new Transform(), new Transform(), null);
 for(var i=0;i<p1.vertexCount;++i)
 {
     p1.setProperties(i,{velocity:[rRng(2),rRng(1)+10,rRng(2)],acceleration:[0,-9.8,0]});
@@ -76,7 +76,7 @@ p1.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p2 = new ParticleSet("p2", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] }), new Transform(), new Transform(), null);
+var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] }), new Transform(), new Transform(), null);
 for(var i=0;i<p2.vertexCount;++i)
 {
     p2.setProperties(i,{velocity:[0,-1,0],acceleration:[0,-9.8,0]});
@@ -119,7 +119,7 @@ p2.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p3 = new ParticleSet("p3", new Material({ diffuseColor: [1, 1, 1, 1] }), new Transform(), new Transform(), null);
+var p3 = new ParticleSet("snow", new Material({ diffuseColor: [1, 1, 1, 1] }), new Transform(), new Transform(), null);
 for(var i=0;i<p3.vertexCount;++i)
 {
     p3.setProperties(i,{velocity:[rRng(1),-1,0],acceleration:[0,-9.8,0]});
@@ -148,7 +148,7 @@ p3.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 
-var p4 = new ParticleSet("p4", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform(), new Transform(), null);
+var p4 = new ParticleSet("sharknado", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform(), new Transform(), null);
 for(var i=0;i<p2.vertexCount;++i)
 {
     p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
