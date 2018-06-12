@@ -88,16 +88,18 @@ p2.animate = function (gl, delta) {
         if(position[1]<-3)
         {
             this.setPosition(i,[position[0],5,position[2]]);
+            p2.setProperties(i,{velocity:[0,0,0],acceleration:[0, -0.5, 0]});
         }
         else
         {
             var accel=vec3.clone(props['acceleration']);
             var velo=vec3.clone(props['velocity']);
-            vec3.scale(accel,accel,delta);
+            var veldelta = vec3.create();
             vec3.add(velo,velo,accel);
-            vec3.scale(velo,velo,delta);
-            vec3.add(position,position,velo);
+            vec3.scale(veldelta,velo,delta);
+            vec3.add(position,position,veldelta);
             this.setPosition(i,position);
+            p2.setProperties(i,{velocity:velo,acceleration:[0, -0.5, 0]});
         }
         /*
         if (this.counter > 100) {
