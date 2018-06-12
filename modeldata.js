@@ -76,7 +76,7 @@ p1.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] }), new Transform(), new Transform(), null);
+var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] , drawMode:DrawMode.POINT_TEXTURED, texture:"raindrop.png"}), new Transform(), new Transform(), null);
 for(var i=0;i<p2.vertexCount;++i)
 {
     p2.setProperties(i,{velocity:[0,-1,0],acceleration:[0,-9.8,0]});
