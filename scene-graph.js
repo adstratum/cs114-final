@@ -116,6 +116,8 @@ class Material {
             if ('texture' in kargs) {
                 this.texture = new Image();
                 this.texture.src = kargs.texture;
+            } if ('textureID' in kargs) {
+                this.textureID = kargs.textureID;
             }
         }
     }

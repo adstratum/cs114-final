@@ -1,6 +1,8 @@
 var nullT = new Transform({ translate: [0, 0, 0], rotateDeg: 0, rotateAxis: [0, 0, 1] });
 var nullAnim = new Transform({ rotateDeg: 0, rotateAxis: [0, 0, 0], scale: [0, 0, 0] });
 
+var textureSources = ["f-texture.png", "room.jpg",];
+
 var root = new Node(
     "root",
     nullT,
