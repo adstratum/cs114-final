@@ -76,7 +76,7 @@ p1.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] , drawMode:DrawMode.POINT_TEXTURED, texture:"raindrop.png"}), new Transform({translate:[-30,0,0]}), new Transform(), null);
+var p2 = new ParticleSet("rain", new Material({ diffuseColor: [0.2, 0.2, 0.9, 1] , drawMode:DrawMode.POINT_TEXTURED, texture:"raindrop.png"}), new Transform({translate:[-30,0,0],scale:[3,3,3]}), new Transform(), null);
 for(var i=0;i<p2.vertexCount;++i)
 {
     p2.setProperties(i,{velocity:[0,-1,0],acceleration:[0,-9.8,0]});
@@ -121,7 +121,7 @@ p2.animate = function (gl, delta) {
 
     this.updateBuffers(gl);
 };
-var p3 = new ParticleSet("snow", new Material({ diffuseColor: [1, 1, 1, 1], drawMode:DrawMode.POINT_TEXTURED, texture:"Snowflake.png"}), new Transform({translate:[0,0,30],scale:[5,5,5]}), new Transform(), null);
+var p3 = new ParticleSet("snow", new Material({ diffuseColor: [1, 1, 1, 1], drawMode:DrawMode.POINT_TEXTURED, texture:"Snowflake.png"}), new Transform({translate:[0,0,30],scale:[3,3,3]}), new Transform(), null);
 for(var i=0;i<p3.vertexCount;++i)
 {
     p3.setProperties(i,{velocity:[rRng(1),-1,0],acceleration:[0,-9.8,0]});
@@ -150,36 +150,39 @@ p3.animate = function (gl, delta) {
     this.updateBuffers(gl);
 };
 
-var p4 = new ParticleSet("sharknado", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform(), new Transform(), null);
+var p4 = new ParticleSet("sharknado", new Material({ diffuseColor: [1, 0, 1, 1] }), new Transform({translate:[0,0,-30]}), new Transform(), null);
 for(var i=0;i<p4.vertexCount;++i)
 
 {
-    p4.setProperties(i,{velocity:[-1,0,0],acceleration:[0,-9.8,0]});
+    p4.setProperties(i,{velocity:[-3,2,0],acceleration:[0,2,0]});
 }
 p4.animate = function (gl, delta) {
     for (var i = 0; i < this.vertexCount; ++i) {
         var position = this.getPosition(i);
         var props=this.getProperties(i);
-        var accel=vec3.clone(props['acceleration']);
+            var accel=vec3.clone(props['acceleration']);
             var velo=vec3.clone(props['velocity']);
             vec3.scale(accel,accel,delta);
             vec3.add(velo,velo,accel);
             vec3.scale(velo,velo,delta);
             vec3.add(position,position,velo);
-            //vec3.rotateY(velo,velo,0.01*delta);
             this.setPosition(i,position);
-            var temp = 0;
-            if(temp == 0)
-            {
-                p4.setProperties(i,{velocity:[Math.sin(position[0]),0,0],acceleration:[0,0,0]});
-                if(velo[0] == 0)
-                    temp = 1;
+            if(position[0]<-2 && velo[0]!=0){
+             p4.setProperties(i,{velocity:[0,2,3],acceleration:[0,2,0]});
+             
             }
-            if(temp == 1)
+            if(position[2]>2 && velo[2]!=0){
+             p4.setProperties(i,{velocity:[3,2,0],acceleration:[0,2,0]});
+            }
+            if(position[0]>2 && velo[0]!=0){
+             p4.setProperties(i,{velocity:[0,2,-3],acceleration:[0,2,0]});
+            }
+            if(position[2]<-2 && velo[2]!=0){
+             p4.setProperties(i,{velocity:[-3,2,0],acceleration:[0,2,0]});
+            }
+            if(position[1]>4)
             {
-                p4.setProperties(i,{velocity:[-Math.sin(position[0]),0,0],acceleration:[0,0,0]});
-                if(velo[0] == 0)
-                    temp = 0;
+                this.setPosition(i,[position[0],0,position[2]]);
             }
     }
         
