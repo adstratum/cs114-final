@@ -464,8 +464,8 @@ function init() {
     // request pointer lock
     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
     document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+    
     // bind pointer lock handlers
-
     document.addEventListener('pointerlockchange', handlePointerLockChange, false);
     document.addEventListener('mozpointerlockchange', handlePointerLockChange, false);
 
