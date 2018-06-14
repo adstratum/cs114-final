@@ -249,25 +249,38 @@ function initGL() {
 
 }
 
-function installModel(modelData, texture) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.coordsBuffer);
+function loadTextures(textures) {
+    textures.readycount = textures.length;
+    for (var i = 0; i < textures.length ; ++i) {
+        textures[i].data = new Image();
+        textures[i].data.onload = function() {
+            textures.readycount--;
+        }
+        textures[i].data.src = textures[i].src;
+    }
+}
+
+function installModel(node) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, node.mesh.coordsBuffer);
     gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_coords_loc);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.normalBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, node.mesh.normalBuffer);
     gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_normal_loc);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelData.indexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.mesh.indexBuffer);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, modelData.texcoordsBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, node.mesh.texcoordsBuffer);
     gl.vertexAttribPointer(a_texcoords_loc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_texcoords_loc);
 
-    if (texture != null) {
+    if (node.material.textureID != null) {
         gl.bindTexture(gl.TEXTURE_2D, texture0);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, texture);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, textures[node.material.textureID].data);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
     gl.uniform1i(u_texture, 0);
 }
@@ -276,7 +289,7 @@ var drawModeOverride = 0;
 
 function drawModel(node, modelview) {
     gl.uniform4fv(u_diffuseColor, node.material.diffuseColor);
-    installModel(node.mesh, node.material.texture);
+    installModel(node);
     if (drawModeOverride == 0) {
         gl.uniform1i(u_drawMode, node.material.drawMode);
     } else {
@@ -368,9 +381,9 @@ function drawParticles(particlesets, viewMatrix) {
         gl.uniformMatrix4fv(u_modelview, false, modelview);
         gl.uniformMatrix4fv(u_projection, false, projection);
 
-        if (node.material.drawMode == DrawMode.POINT_TEXTURED && node.material.texture != null) {
+        if (node.material.drawMode == DrawMode.POINT_TEXTURED && node.material.textureID != null) {
             gl.bindTexture(gl.TEXTURE_2D, texture0);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, node.material.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, textures[node.material.textureID].data);
             gl.generateMipmap(gl.TEXTURE_2D);
         }
 
@@ -391,22 +404,24 @@ function animateParticles(particles, delta) {
 }
 
 function draw() {
-    var viewMatrix = getViewMatrix();
-    loadLights(viewMatrix, lights);
+    if (textures.readycount == 0) {
+        var viewMatrix = getViewMatrix();
+        loadLights(viewMatrix, lights);
 
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.disable(gl.BLEND);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthMask(true);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.disable(gl.BLEND);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
 
-    // root, particles defined in modeldata.js
-    rdraw(root, viewMatrix);
+        // root, particles defined in modeldata.js
+        rdraw(root, viewMatrix);
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE);
-    gl.depthMask(false);
-    
-    drawParticles(particlesets, viewMatrix);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE);
+        gl.depthMask(false);
+        
+        drawParticles(particlesets, viewMatrix);
+    }
 }
 
 function animate(node, delta) {
@@ -459,6 +474,7 @@ function init() {
 
     bufferModels(root);
     bufferParticles(particlesets);
+    loadTextures(textures);
 
     draw();
     requestAnimationFrame(tick);

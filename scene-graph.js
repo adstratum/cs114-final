@@ -96,7 +96,7 @@ class Material {
      * @param {vec4} specularColor 
      * @param {float} specularExponent 
      * @param {enum} drawMode
-     * @param {url} texture
+     * @param {int} textureID
     */
     constructor(kargs) {
         this.diffuseColor = vec4.fromValues(1, 1, 1, 1);
@@ -113,9 +113,8 @@ class Material {
                 this.specularExponent = kargs.specularExponent;
             if ('drawMode' in kargs)
                 this.drawMode = kargs.drawMode;
-            if ('texture' in kargs) {
-                this.texture = new Image();
-                this.texture.src = kargs.texture;
+            if ('textureID' in kargs) {
+                this.textureID = kargs.textureID;
             }
         }
     }
